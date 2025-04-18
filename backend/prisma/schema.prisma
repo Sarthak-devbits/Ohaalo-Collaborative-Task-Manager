@@ -111,6 +111,7 @@ model Card {
   dueDate     DateTime?    @map("due_date")
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
+  position    Int          @map("position")
   attachments Attachment[]
   member      CardMember[]
   list        List         @relation(fields: [listId], references: [id], onDelete: Cascade)

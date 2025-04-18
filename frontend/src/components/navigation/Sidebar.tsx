@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -6,20 +5,22 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTaskContext } from "@/contexts/TaskContext";
-import { 
-  Search, 
-  Plus, 
-  LayoutDashboard, 
-  Calendar, 
-  Settings, 
-  Users, 
-  PanelLeft, 
-  ChevronDown, 
-  Inbox 
+import {
+  Search,
+  Plus,
+  LayoutDashboard,
+  Calendar,
+  Settings,
+  Users,
+  PanelLeft,
+  ChevronDown,
+  Inbox,
 } from "lucide-react";
+import { ohaloSvg } from "@/assets";
 
 export function Sidebar() {
-  const { currentUser, workspaces, setCurrentWorkspace, currentWorkspace } = useTaskContext();
+  const { currentUser, workspaces, setCurrentWorkspace, currentWorkspace } =
+    useTaskContext();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [workspacesOpen, setWorkspacesOpen] = useState(true);
 
@@ -33,10 +34,7 @@ export function Sidebar() {
       <div className="flex h-14 items-center justify-between border-b px-4 py-2">
         {!isCollapsed && (
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary">
-              <span className="text-xs font-bold text-primary-foreground">WS</span>
-            </div>
-            <span className="text-lg font-semibold">WorkSync</span>
+            <img src={ohaloSvg} />
           </div>
         )}
         <Button
@@ -56,7 +54,7 @@ export function Sidebar() {
             <Input
               type="search"
               placeholder="Search..."
-              className="w-full rounded-md bg-secondary pl-8 text-xs"
+              className="w-full rounded-md  pl-8 text-xs"
             />
           </div>
         </div>
@@ -70,15 +68,27 @@ export function Sidebar() {
                 Menu
               </h3>
               <div className="mt-2 space-y-1">
-                <Button variant="ghost" size="sm" className="w-full justify-start">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start"
+                >
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Dashboard
                 </Button>
-                <Button variant="ghost" size="sm" className="w-full justify-start">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start"
+                >
                   <Inbox className="mr-2 h-4 w-4" />
                   My Tasks
                 </Button>
-                <Button variant="ghost" size="sm" className="w-full justify-start">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start"
+                >
                   <Calendar className="mr-2 h-4 w-4" />
                   Calendar
                 </Button>
@@ -107,12 +117,18 @@ export function Sidebar() {
           ) : (
             <div className="px-1 py-2">
               <div className="flex items-center justify-between">
-                <h3 
+                <h3
                   className="flex cursor-pointer items-center text-xs font-medium uppercase text-muted-foreground"
                   onClick={() => setWorkspacesOpen(!workspacesOpen)}
                 >
                   Workspaces
-                  <ChevronDown size={14} className={cn("ml-1 transition-transform", workspacesOpen ? "rotate-0" : "-rotate-90")} />
+                  <ChevronDown
+                    size={14}
+                    className={cn(
+                      "ml-1 transition-transform",
+                      workspacesOpen ? "rotate-0" : "-rotate-90"
+                    )}
+                  />
                 </h3>
                 <Button variant="ghost" size="icon" className="h-6 w-6">
                   <Plus size={14} />
@@ -123,12 +139,16 @@ export function Sidebar() {
                   {workspaces.map((workspace) => (
                     <Button
                       key={workspace.id}
-                      variant={currentWorkspace?.id === workspace.id ? "secondary" : "ghost"}
+                      variant={
+                        currentWorkspace?.id === workspace.id
+                          ? "secondary"
+                          : "ghost"
+                      }
                       size="sm"
                       className="w-full justify-start"
                       onClick={() => setCurrentWorkspace(workspace)}
                     >
-                      <div className="flex h-5 w-5 items-center justify-center rounded bg-primary/10 text-xs font-medium text-primary mr-2">
+                      <div className="flex h-5 w-5 items-center justify-center rounded bg-primary/10 text-xs font-medium mr-2">
                         {workspace.name.substring(0, 1)}
                       </div>
                       <span className="truncate">{workspace.name}</span>
@@ -158,8 +178,12 @@ export function Sidebar() {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 overflow-hidden">
-              <p className="text-sm font-medium leading-none">{currentUser?.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{currentUser?.email}</p>
+              <p className="text-sm font-medium leading-none">
+                {currentUser?.name}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {currentUser?.email}
+              </p>
             </div>
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Settings size={16} />

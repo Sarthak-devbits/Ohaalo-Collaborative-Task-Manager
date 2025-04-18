@@ -95,11 +95,11 @@ export function BoardColumn({
       </div>
       
       {/* New Task Modal for this column */}
-      <NewTaskModal 
+      {/* <NewTaskModal 
         isOpen={isNewTaskModalOpen} 
         onClose={() => setIsNewTaskModalOpen(false)}
         defaultStatus={columnId}
-      />
+      /> */}
     </div>
   );
 }
