@@ -258,7 +258,7 @@ export const boardsListData = [
   {
     id: 1,
     listName: "Backlog",
-    position: 0,
+    position: 1,
     boardId: 101,
     cards: [
       {
@@ -322,7 +322,7 @@ export const boardsListData = [
   {
     id: 2,
     listName: "To Do",
-    position: 1,
+    position: 2,
     boardId: 101,
     cards: [
       {
@@ -384,7 +384,7 @@ export const boardsListData = [
   {
     id: 3,
     listName: "In Progress",
-    position: 2,
+    position: 3,
     boardId: 101,
     cards: [
       {

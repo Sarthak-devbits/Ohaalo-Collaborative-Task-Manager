@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   boardsListData as listData,
   useTaskContext,
@@ -12,9 +12,14 @@ import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 
 export function KanbanBoard() {
-  const [boardsListData, setBoardsListData] = useState(listData);
+  const [boardsListData, setBoardsListData] = useState([]);
   const [draggingCardId, setDraggingCardId] = useState<number | null>();
   const [draggingSourceId, setDraggingSourceId] = useState<number | null>();
+
+  useEffect(() => {
+    const sortedList = [...listData].sort((a, b) => a.position - b.position);
+    setBoardsListData(sortedList);
+  }, [listData]);
 
   // const { board, moveTask } = useTaskContext();
 
@@ -100,7 +105,7 @@ export function KanbanBoard() {
     if (mod === 5) return "bg-[black]/10";
     return "bg-muted/30"; // fallback
   };
-  
+
   return (
     <div className="h-full overflow-auto p-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5">
@@ -121,7 +126,9 @@ export function KanbanBoard() {
             >
               <div className="flex items-center justify-between border-b px-3 py-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">{listData?.listName}</span>
+                  <span className="text-sm font-medium">
+                    {listData?.listName}
+                  </span>
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs">
                     {listData?.cards?.length}
                   </span>
@@ -147,7 +154,7 @@ export function KanbanBoard() {
                         handleDragStart(cardData.id, listData.id);
                       }}
                     >
-                      <TaskCard cardData={cardData}/>
+                      <TaskCard cardData={cardData} />
                     </div>
                   );
                 })}
