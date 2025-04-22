@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from "react";
+
 import { useTaskContext } from "@/contexts/TaskContext";
-import { KanbanBoard } from "@/components/board/KanbanBoard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LoadingState } from "@/components/ui/loading-state";
-import { NewTaskModal } from "@/components/tasks/NewTaskModal";
 import {
   Search,
   Plus,
-  Calendar,
   Filter,
-  List,
-  LayoutGrid,
-  MoreHorizontal,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
