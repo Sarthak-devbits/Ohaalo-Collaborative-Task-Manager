@@ -10,11 +10,21 @@ import { TaskCard } from "../tasks/TaskCard";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
+import CreationModal from "../modals/CreationModal";
 
 export function KanbanBoard() {
   const [boardsListData, setBoardsListData] = useState([]);
   const [draggingCardId, setDraggingCardId] = useState<number | null>();
   const [draggingSourceId, setDraggingSourceId] = useState<number | null>();
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     const sortedList = [...listData].sort((a, b) => a.position - b.position);
@@ -108,6 +118,14 @@ export function KanbanBoard() {
 
   return (
     <div className="h-full overflow-auto p-4">
+      {open && (
+        <CreationModal
+          title="Create Task"
+          description="Define a new task to keep your team organized and on track."
+          open={open}
+          handleClose={handleClose}
+        />
+      )}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5">
         {boardsListData.map((listData, index) => {
           return (
@@ -138,7 +156,7 @@ export function KanbanBoard() {
                   size="icon"
                   className="h-7 w-7"
                   title="Add new task"
-                  // onClick={() => setIsNewTaskModalOpen(true)}
+                  onClick={handleOpen}
                 >
                   <Plus size={14} />
                 </Button>

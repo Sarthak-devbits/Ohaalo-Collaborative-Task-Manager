@@ -19,7 +19,7 @@ const Dashboard = () => {
         <div className="w-full border px-2 rounded-md border-[#6C43E2] border-dashed  my-3">
           <div className="my-4">
             <div>
-                <h3 className="font-light">Telescope 1010</h3>
+              <h3 className="font-light">Telescope 1010</h3>
             </div>
             <div className="flex flex-wrap gap-x-5 gap-y-3 mt-2">
               {[1, 2, 3, 4, 5, 6].map(() => {
@@ -30,7 +30,7 @@ const Dashboard = () => {
           </div>
           <div className="my-4">
             <div>
-                <h3 className="font-light">Telescope 1010</h3>
+              <h3 className="font-light">Telescope 1010</h3>
             </div>
             <div className="flex flex-wrap gap-x-5 gap-y-3 mt-2">
               {[1, 2, 3, 4, 5, 6].map(() => {

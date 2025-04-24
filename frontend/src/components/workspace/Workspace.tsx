@@ -3,20 +3,25 @@ import React, { useEffect, useState } from "react";
 import { useTaskContext } from "@/contexts/TaskContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Search,
-  Plus,
-  Filter,
-} from "lucide-react";
+import { Search, Plus, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import CreationModal from "../modals/CreationModal";
 
 export function Workspace() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [open, setOpen] = useState(false);
   const { currentWorkspace, currentUser, users, isLoading } = useTaskContext();
   const [navBarTitle, setNavBarTitle] = useState("");
-  const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   // Get workspace members with full user data
   const members = currentWorkspace?.members
@@ -35,9 +40,15 @@ export function Workspace() {
   }, []);
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="flex h-screen flex-col overflow-hidden ">
+      <CreationModal
+        title="Create List"
+        description="Organize your tasks into a structured list to improve clarity and focus."
+        open={open}
+        handleClose={handleClose}
+      />
       {/* Workspace header */}
-      <div className="flex h-[150px] items-center justify-between border-b px-4">
+      <div className="flex min-h-[60px] h-[60px] items-center justify-between border-b px-4">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold">{navBarTitle}</h1>
         </div>
@@ -76,7 +87,7 @@ export function Workspace() {
                 <Filter className="mr-2 h-4 w-4" />
                 Filter
               </Button>
-              <Button size="sm" onClick={() => setIsNewTaskModalOpen(true)}>
+              <Button size="sm" onClick={handleOpen}>
                 <Plus className="mr-2 h-4 w-4" />
                 New List
               </Button>
