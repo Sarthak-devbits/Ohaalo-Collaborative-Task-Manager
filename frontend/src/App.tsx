@@ -20,6 +20,8 @@ const App = () => (
           <Route path="/" element={<Index />}>
             <Route path="board" element={<SingleBoard />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="task" element={<Dashboard />} />
+            <Route path="calender" element={<Dashboard />} />
             {/* Add more child routes of workspace here */}
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

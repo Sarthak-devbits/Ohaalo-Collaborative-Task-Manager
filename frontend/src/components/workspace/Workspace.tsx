@@ -7,11 +7,13 @@ import { Search, Plus, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import CreationModal from "../modals/CreationModal";
+import FilterSidebar from "../sidebar/FilterSidebar";
 
 export function Workspace() {
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [openFilterSidebar, setOpenFilterSidebar] = useState(false);
   const { currentWorkspace, currentUser, users, isLoading } = useTaskContext();
   const [navBarTitle, setNavBarTitle] = useState("");
 
@@ -21,6 +23,14 @@ export function Workspace() {
 
   const handleOpen = () => {
     setOpen(true);
+  };
+
+  const handleFilterSidebarClose = () => {
+    setOpenFilterSidebar(false);
+  };
+
+  const handleFilterSidebarOpen = () => {
+    setOpenFilterSidebar(true);
   };
 
   // Get workspace members with full user data
@@ -41,12 +51,22 @@ export function Workspace() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden ">
-      <CreationModal
-        title="Create List"
-        description="Organize your tasks into a structured list to improve clarity and focus."
-        open={open}
-        handleClose={handleClose}
-      />
+      {openFilterSidebar && (
+        <FilterSidebar
+          open={openFilterSidebar}
+          handleClose={handleFilterSidebarClose}
+        />
+      )}
+
+      {open && (
+        <CreationModal
+          title="Create List"
+          description="Organize your tasks into a structured list to improve clarity and focus."
+          open={open}
+          handleClose={handleClose}
+        />
+      )}
+
       {/* Workspace header */}
       <div className="flex min-h-[60px] h-[60px] items-center justify-between border-b px-4">
         <div className="flex items-center gap-2">
@@ -83,7 +103,11 @@ export function Workspace() {
                   </div>
                 )}
               </div>
-              <Button variant="outline" size="sm">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleFilterSidebarOpen}
+              >
                 <Filter className="mr-2 h-4 w-4" />
                 Filter
               </Button>

@@ -23,16 +23,11 @@ const SingleBoard = () => {
         </Button>
       </div>
 
-      {/* Main content area */}
       <div className="flex-1 overflow-hidden">
         <KanbanBoard />
       </div>
 
-      {/* New Task Modal */}
-      {/* <NewTaskModal
-        isOpen={isNewTaskModalOpen}
-        onClose={() => setIsNewTaskModalOpen(false)}
-      /> */}
+     
     </>
   );
 };

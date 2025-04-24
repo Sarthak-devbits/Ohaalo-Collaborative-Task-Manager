@@ -33,7 +33,6 @@ const CreationModal = ({
   return (
     <div >
       <Dialog open={open} onOpenChange={handleClose}>
-     
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>

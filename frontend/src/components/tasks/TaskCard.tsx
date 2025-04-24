@@ -7,15 +7,25 @@ import { useTaskContext } from "@/contexts/TaskContext";
 import { getPriorityClass } from "@/data/mockData";
 import { Calendar, Check, MessageSquare, Paperclip } from "lucide-react";
 import { TaskDetailModal } from "./TaskDetailModal";
+import TaskModal from "../modals/TaskModal";
 
 interface TaskCardProps {
   task: Task;
   isDragging?: boolean;
 }
 
-export function TaskCard({cardData}) {
+export function TaskCard({ cardData }) {
+  const [open, setOpen] = useState(false);
   const { users } = useTaskContext();
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   // Format the due date to a more readable format
   const formatDueDate = (dateString?: string) => {
@@ -47,17 +57,20 @@ export function TaskCard({cardData}) {
 
   return (
     <>
+      <TaskModal open={open} handleClose={handleClose}/>
       <div
         className={cn(
           "group relative flex flex-col space-y-2 rounded-md border bg-card p-3 shadow-sm transition-all cursor-pointer",
           false ? "scale-105 opacity-90 shadow-md rotate-1" : "hover:shadow",
           "animate-fade-in"
         )}
-        // onClick={handleCardClick}
+        onClick={handleOpen}
       >
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <h3 className="font-medium text-sm line-clamp-2">{cardData?.cardTitle}</h3>
+            <h3 className="font-medium text-sm line-clamp-2">
+              {cardData?.cardTitle}
+            </h3>
             <p className="text-xs text-muted-foreground line-clamp-2">
               description
             </p>
@@ -72,7 +85,7 @@ export function TaskCard({cardData}) {
             className="h-2 w-2 rounded-full"
             // style={{ backgroundColor: tag.color }}
           />
-          <span>Tag NAme</span>
+          <span>Tag Name</span>
         </Badge>
 
         <div className="space-y-1">
@@ -109,18 +122,13 @@ export function TaskCard({cardData}) {
 
         <div className="flex items-center justify-between pt-2">
           <div className="flex -space-x-2">
-            <Avatar
-             
-              className="h-6 w-6 border-2 border-background"
-            >
+            <Avatar className="h-6 w-6 border-2 border-background">
               {/* <AvatarImage src={user!.avatar} /> */}
-              <AvatarFallback className="text-xs">
-                A
-              </AvatarFallback>
+              <AvatarFallback className="text-xs">A</AvatarFallback>
             </Avatar>
             <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-background bg-muted text-xs">
-                +{3}
-              </div>
+              +{3}
+            </div>
           </div>
           <Badge
             variant="outline"

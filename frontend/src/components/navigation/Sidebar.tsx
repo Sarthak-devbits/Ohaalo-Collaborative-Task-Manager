@@ -17,12 +17,27 @@ import {
   Inbox,
 } from "lucide-react";
 import { ohaloSvg } from "@/assets";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function Sidebar() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser, workspaces, setCurrentWorkspace, currentWorkspace } =
     useTaskContext();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [workspacesOpen, setWorkspacesOpen] = useState(true);
+
+  const handleNavigationToDashboard = () => {
+    navigate("/dashboard");
+  };
+  const handleNavigationToTask = () => {
+    navigate("/task");
+  };
+  const handleNavigationToCalender = () => {
+    navigate("/calender");
+  };
+
+  console.log(location.pathname);
 
   return (
     <div
@@ -69,25 +84,32 @@ export function Sidebar() {
               </h3>
               <div className="mt-2 space-y-1">
                 <Button
-                  variant="ghost"
+                  variant={
+                    location.pathname === "/dashboard" ? undefined : "ghost"
+                  }
                   size="sm"
-                  className="w-full justify-start"
+                  className={cn("w-full justify-start ")}
+                  onClick={handleNavigationToDashboard}
                 >
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Dashboard
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant={location.pathname === "/task" ? undefined : "ghost"}
                   size="sm"
                   className="w-full justify-start"
+                  onClick={handleNavigationToTask}
                 >
                   <Inbox className="mr-2 h-4 w-4" />
                   My Tasks
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant={
+                    location.pathname === "/calender" ? undefined : "ghost"
+                  }
                   size="sm"
                   className="w-full justify-start"
+                  onClick={handleNavigationToCalender}
                 >
                   <Calendar className="mr-2 h-4 w-4" />
                   Calendar
@@ -98,13 +120,32 @@ export function Sidebar() {
 
           {isCollapsed ? (
             <div className="flex flex-col items-center space-y-3 py-2">
-              <Button variant="ghost" size="icon" className="h-9 w-9">
+              <Button
+                variant={
+                  location.pathname === "/dashboard" ? undefined : "ghost"
+                }
+                size="icon"
+                className="h-9 w-9"
+                onClick={handleNavigationToDashboard}
+              >
                 <LayoutDashboard size={18} />
               </Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9">
+              <Button
+                variant={location.pathname === "/task" ? undefined : "ghost"}
+                size="icon"
+                className="h-9 w-9"
+                onClick={handleNavigationToTask}
+              >
                 <Inbox size={18} />
               </Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9">
+              <Button
+                variant={
+                  location.pathname === "/calender" ? undefined : "ghost"
+                }
+                size="icon"
+                className="h-9 w-9"
+                onClick={handleNavigationToCalender}
+              >
                 <Calendar size={18} />
               </Button>
               <Button variant="ghost" size="icon" className="h-9 w-9">

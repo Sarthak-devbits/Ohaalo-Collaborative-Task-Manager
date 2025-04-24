@@ -104,4 +104,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .dotted-purple-border{
+    @apply rounded-md border-[#6C43E2] border-dashed
+  }
 }

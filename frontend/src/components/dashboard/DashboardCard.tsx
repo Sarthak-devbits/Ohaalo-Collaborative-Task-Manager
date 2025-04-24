@@ -2,9 +2,15 @@ import { useTaskContext } from "@/contexts/TaskContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { ArrowRight } from "lucide-react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const DashboardCard = () => {
+  const navigate = useNavigate();
   const { currentWorkspace, users } = useTaskContext();
+
+  const handleNavigateToboard = () => {
+    navigate("/board");
+  };
 
   const members = currentWorkspace?.members
     .map((member) => ({
@@ -14,7 +20,10 @@ const DashboardCard = () => {
     .filter((member) => member.user);
 
   return (
-    <div className="max-w-[362px] min-h-[144px] w-full rounded-md p-2 py-3 bg-[#EEF7FB] flex flex-col justify-between cursor-pointer">
+    <div
+      className="max-w-[362px] min-h-[144px] w-full rounded-md p-2 py-3 bg-[#EEF7FB] flex flex-col justify-between cursor-pointer"
+      onClick={handleNavigateToboard}
+    >
       <div>
         <h4 className="font-light">Tlescpoes 101</h4>
         <p className="font-light text-xs text-gray-400 ">
