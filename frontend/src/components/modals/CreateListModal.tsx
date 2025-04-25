@@ -9,30 +9,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
-import { createBoard } from "@/services/webApis/webApis";
+import { createList } from "@/services/webApis/webApis";
 
 const creationSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
-  visibility: z.enum(["PUBLIC", "PRIVATE"], {
-    required_error: "Please select visibility",
-  }),
+  boardId: z.number().min(1, "List is missing"),
 });
 
 type CreationFormData = z.infer<typeof creationSchema>;
 
-const CreationModal = ({
+const CreateListModal = ({
   title,
   description,
   open = false,
@@ -43,7 +34,6 @@ const CreationModal = ({
   open: boolean;
   handleClose: () => void;
 }) => {
-
   const {
     register,
     handleSubmit,
@@ -54,26 +44,24 @@ const CreationModal = ({
     resolver: zodResolver(creationSchema),
     defaultValues: {
       title: "",
-      visibility: "PUBLIC",
+      boardId: 5,
     },
   });
 
   const mutation = useMutation({
     mutationFn: (data: CreationFormData) =>
-      createBoard({
-        title: data.title,
-        visibility: data.visibility,
-        backgroundImg:
-          "https://dev.to/docker/setting-up-aws-s3-bucket-locally-using-localstack-and-docker-l6b",
+      createList({
+        listName: data.title,
+        boardId: data.boardId,
       }),
     onSuccess: () => {
-      toast({ title: "Board created successfully!" });
+      toast({ title: "List created successfully!" });
       reset();
       handleClose();
     },
     onError: (err: any) => {
       toast({
-        title: "Failed to create board",
+        title: "Failed to create List",
         description: err?.response?.data?.message || "Something went wrong",
         variant: "destructive",
       });
@@ -104,28 +92,6 @@ const CreationModal = ({
             )}
           </div>
 
-          <div className="grid gap-2">
-            <Select
-              onValueChange={(value) =>
-                setValue("visibility", value as "PUBLIC" | "PRIVATE")
-              }
-              defaultValue="PUBLIC"
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select visibility" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="PUBLIC">Public</SelectItem>
-                <SelectItem value="PRIVATE">Private</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.visibility && (
-              <p className="text-sm text-red-600">
-                {errors.visibility.message}
-              </p>
-            )}
-          </div>
-
           <DialogFooter className="sm:justify-end">
             <Button type="submit" disabled={mutation.isPending}>
               {mutation.isPending ? "Creating..." : "Create"}
@@ -137,4 +103,4 @@ const CreationModal = ({
   );
 };
 
-export default CreationModal;
+export default CreateListModal;

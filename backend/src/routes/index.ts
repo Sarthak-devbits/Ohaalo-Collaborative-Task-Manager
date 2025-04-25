@@ -4,6 +4,7 @@ import { boardRoutes } from './board.routes';
 import { listRoutes } from './list.routes';
 import { labelRoutes } from './label.routes';
 import { gptRoutes } from './gpt.routes';
+import { cardRoutes } from './card.routes';
 
 export const routes = Router();
 
@@ -18,6 +19,10 @@ routes.use('/v1', boardRoutes);
 
 //List Route
 routes.use('/v1', listRoutes);
+
+//Card Route
+routes.use('/v1', cardRoutes);
+
 
 //Label Route
 routes.use('/v1', labelRoutes);

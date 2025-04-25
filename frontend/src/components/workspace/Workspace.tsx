@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import CreationModal from "../modals/CreationModal";
 import FilterSidebar from "../sidebar/FilterSidebar";
+import CreateListModal from "../modals/CreateListModal";
 
 export function Workspace() {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ export function Workspace() {
       )}
 
       {open && (
-        <CreationModal
+        <CreateListModal
           title="Create List"
           description="Organize your tasks into a structured list to improve clarity and focus."
           open={open}

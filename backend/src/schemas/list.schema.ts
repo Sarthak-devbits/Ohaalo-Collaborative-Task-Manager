@@ -13,7 +13,8 @@ export const listUpdateSchema = z
     listName: z
       .string()
       .min(3, 'listName should be at least 3 character')
-      .max(20, 'listName should be less than 20 character').optional(),
-    listId: z.number().min(1, 'boardId is required').optional()
+      .max(20, 'listName should be less than 20 character')
+      .optional(),
+    listId: z.number().min(1, 'boardId is required').optional(),
   })
   .strict();

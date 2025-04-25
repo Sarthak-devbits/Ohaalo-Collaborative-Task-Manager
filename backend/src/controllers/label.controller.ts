@@ -30,7 +30,7 @@ export class LabelController {
         },
       }),
     ]);
-    console.log(isBoardMember)
+    
     if (!board) {
       throw new AppError(`BoardId is Invalid`, 400);
     }

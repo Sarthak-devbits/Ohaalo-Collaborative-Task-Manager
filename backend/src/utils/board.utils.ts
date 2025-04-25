@@ -5,3 +5,4 @@ export const isBoardExist = async (boardId: number) => {
     },
   });
 };
+
