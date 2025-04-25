@@ -1,5 +1,5 @@
-import { AppError } from '@/utils/appError';
-import { isListExist } from '@/utils/list.utils';
+import { AppError } from '../utils/appError';
+import { isListExist } from '../utils/list.utils';
 import { BoardRole } from '@prisma/client';
 
 export class CardServices {
@@ -19,7 +19,6 @@ export class CardServices {
     }
 
     const [list] = await Promise.all([isListExist(listId)]);
-
     const isBoardMember = await prisma?.boardUser.findFirst({
       where: {
         boardId: list?.boardId,

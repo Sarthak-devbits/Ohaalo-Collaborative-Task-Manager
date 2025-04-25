@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import CreationModal from "../modals/CreationModal";
+import CreateCard from "../modals/CreateCardModal";
 
 export function KanbanBoard() {
   const [boardsListData, setBoardsListData] = useState([]);
@@ -119,7 +120,7 @@ export function KanbanBoard() {
   return (
     <div className="h-full overflow-auto p-4">
       {open && (
-        <CreationModal
+        <CreateCard
           title="Create Task"
           description="Define a new task to keep your team organized and on track."
           open={open}

@@ -18,10 +18,20 @@ import {
 } from "lucide-react";
 import { ohaloSvg } from "@/assets";
 import { useLocation, useNavigate } from "react-router-dom";
+import CreateWorkspaceModal from "../modals/CreateWorkSpaceModal";
 
 export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [openWorkspace, setOpenWorkspace] = useState(false);
+
+  const handleOpenWorkspace = () => {
+    setOpenWorkspace(true);
+  };
+  const handleCloseWorkspace = () => {
+    setOpenWorkspace(false);
+  };
+
   const { currentUser, workspaces, setCurrentWorkspace, currentWorkspace } =
     useTaskContext();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -46,6 +56,15 @@ export function Sidebar() {
         isCollapsed ? "w-[60px]" : "w-[280px]"
       )}
     >
+      {openWorkspace && (
+        <CreateWorkspaceModal
+          title="Create Workspace"
+          description="Start collaborating with a new workspace."
+          handleClose={handleCloseWorkspace}
+          open={openWorkspace}
+        />
+      )}
+
       <div className="flex h-14 items-center justify-between border-b px-4 py-2">
         {!isCollapsed && (
           <div className="flex items-center gap-2">
@@ -171,7 +190,12 @@ export function Sidebar() {
                     )}
                   />
                 </h3>
-                <Button variant="ghost" size="icon" className="h-6 w-6">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={handleOpenWorkspace}
+                >
                   <Plus size={14} />
                 </Button>
               </div>

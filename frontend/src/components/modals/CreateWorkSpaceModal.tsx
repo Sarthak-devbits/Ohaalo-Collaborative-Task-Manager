@@ -14,16 +14,15 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
-import { createList } from "@/services/webApis/webApis";
+import { createCard, createWorkspace } from "@/services/webApis/webApis";
 
 const creationSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  boardId: z.number().min(1, "BoardId is missing"),
+  name: z.string().min(3, "Workspace name must be at least 3 characters"),
 });
 
 type CreationFormData = z.infer<typeof creationSchema>;
 
-const CreateListModal = ({
+const CreateWorkspaceModal = ({
   title,
   description,
   open = false,
@@ -43,25 +42,23 @@ const CreateListModal = ({
   } = useForm<CreationFormData>({
     resolver: zodResolver(creationSchema),
     defaultValues: {
-      title: "",
-      boardId: 5,
+      name: "",
     },
   });
 
   const mutation = useMutation({
     mutationFn: (data: CreationFormData) =>
-      createList({
-        listName: data.title,
-        boardId: data.boardId,
+      createWorkspace({
+        name: data.name,
       }),
     onSuccess: () => {
-      toast({ title: "List created successfully!" });
+      toast({ title: "Workspace created successfully!" });
       reset();
       handleClose();
     },
     onError: (err: any) => {
       toast({
-        title: "Failed to create List",
+        title: "Failed to create Workspace",
         description: err?.response?.data?.message || "Something went wrong",
         variant: "destructive",
       });
@@ -83,12 +80,12 @@ const CreateListModal = ({
 
           <div className="grid gap-2">
             <Input
-              placeholder="Enter a title"
-              {...register("title")}
-              className={errors.title ? "border-red-500" : ""}
+              placeholder="Enter workspace name"
+              {...register("name")}
+              className={errors.name ? "border-red-500" : ""}
             />
-            {errors.title && (
-              <p className="text-sm text-red-600">{errors.title.message}</p>
+            {errors.name && (
+              <p className="text-sm text-red-600">{errors.name.message}</p>
             )}
           </div>
 
@@ -103,4 +100,4 @@ const CreateListModal = ({
   );
 };
 
-export default CreateListModal;
+export default CreateWorkspaceModal;

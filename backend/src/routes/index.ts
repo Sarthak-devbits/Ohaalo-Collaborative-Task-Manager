@@ -5,6 +5,7 @@ import { listRoutes } from './list.routes';
 import { labelRoutes } from './label.routes';
 import { gptRoutes } from './gpt.routes';
 import { cardRoutes } from './card.routes';
+import { workspaceRoutes } from './workspace.routes';
 
 export const routes = Router();
 
@@ -13,6 +14,9 @@ routes.use('/v1/auth', authRoutes);
 
 //Gemni Route
 routes.use('/v1/', gptRoutes);
+
+//Workspace Route
+routes.use('/v1', workspaceRoutes);
 
 //Board Route
 routes.use('/v1', boardRoutes);

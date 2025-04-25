@@ -14,16 +14,16 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
-import { createList } from "@/services/webApis/webApis";
+import { createCard } from "@/services/webApis/webApis";
 
 const creationSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
-  boardId: z.number().min(1, "BoardId is missing"),
+  listId: z.number().min(1, "ListId is missing"),
 });
 
 type CreationFormData = z.infer<typeof creationSchema>;
 
-const CreateListModal = ({
+const CreateCard = ({
   title,
   description,
   open = false,
@@ -44,24 +44,24 @@ const CreateListModal = ({
     resolver: zodResolver(creationSchema),
     defaultValues: {
       title: "",
-      boardId: 5,
+      listId: 1,
     },
   });
 
   const mutation = useMutation({
     mutationFn: (data: CreationFormData) =>
-      createList({
-        listName: data.title,
-        boardId: data.boardId,
+      createCard({
+        cardTitle: data.title,
+        listId: data.listId,
       }),
     onSuccess: () => {
-      toast({ title: "List created successfully!" });
+      toast({ title: "Task created successfully!" });
       reset();
       handleClose();
     },
     onError: (err: any) => {
       toast({
-        title: "Failed to create List",
+        title: "Failed to create Task",
         description: err?.response?.data?.message || "Something went wrong",
         variant: "destructive",
       });
@@ -103,4 +103,4 @@ const CreateListModal = ({
   );
 };
 
-export default CreateListModal;
+export default CreateCard;

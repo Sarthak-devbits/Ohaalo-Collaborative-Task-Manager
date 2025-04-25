@@ -24,8 +24,20 @@ model User {
   board        Board[]
   cardMember   CardMember[]
   comments     Comment[]
+  workspaces   WorkSpace[]
 
   @@map("users")
+}
+
+model WorkSpace {
+  id        Int      @id @default(autoincrement())
+  name      String   @map("name")
+  ownerId   Int      @map("owner_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  boards    Board[]
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  @@map("workspaces")
 }
 
 model Board {
@@ -40,6 +52,8 @@ model Board {
   likes         BoardLikes[]
   users         BoardUser[]
   owner         User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  workspaceId   Int          @map("workspace_id")
+  workspace     WorkSpace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   label         Label[]
   lists         List[]
 
@@ -90,7 +104,7 @@ model BoardLikes {
 model List {
   id        Int      @id @default(autoincrement())
   listName  String   @map("list_name")
-  position  Int      @map("position")
+  position  Int?      @map("position")
   boardId   Int      @map("board_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -111,7 +125,7 @@ model Card {
   dueDate     DateTime?    @map("due_date")
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
-  position    Int          @map("position")
+  position    Int?          @map("position")
   attachments Attachment[]
   member      CardMember[]
   list        List         @relation(fields: [listId], references: [id], onDelete: Cascade)

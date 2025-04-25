@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { createCardSchema } from '@/schemas/card.schema';
-import { CardServices } from '@/services/card.servies';
-import { httpStatusCodes } from '@/utils/httpStatusCode';
-import { formResponse } from '@/utils/formResponse';
+import { createCardSchema } from '../schemas/card.schema';
+import { CardServices } from '../services/card.servies';
+import { httpStatusCodes } from '../utils/httpStatusCode';
+import { formResponse } from '../utils/formResponse';
 
 const cardServies = new CardServices();
 

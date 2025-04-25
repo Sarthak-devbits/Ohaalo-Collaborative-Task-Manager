@@ -7,5 +7,5 @@ export const createCardSchema = z.object({
   bannerImg: z.string().url().optional(), // Optional and should be a valid URL
   completed: z.boolean().optional().default(false),
   dueDate: z.coerce.date().optional(), // Coerce for string-to-date conversion
-  position: z.number(),
+  position: z.number().optional(),
 });
