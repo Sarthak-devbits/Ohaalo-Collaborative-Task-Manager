@@ -12,9 +12,10 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import { createCard, createWorkspace } from "@/services/webApis/webApis";
+import { useSessionVariables } from "@/redux/useSessionVariables";
 
 const creationSchema = z.object({
   name: z.string().min(3, "Workspace name must be at least 3 characters"),
@@ -33,6 +34,8 @@ const CreateWorkspaceModal = ({
   open: boolean;
   handleClose: () => void;
 }) => {
+  const queryClient = useQueryClient();
+  const { userId } = useSessionVariables();
   const {
     register,
     handleSubmit,
@@ -53,6 +56,7 @@ const CreateWorkspaceModal = ({
       }),
     onSuccess: () => {
       toast({ title: "Workspace created successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["user", userId] });
       reset();
       handleClose();
     },

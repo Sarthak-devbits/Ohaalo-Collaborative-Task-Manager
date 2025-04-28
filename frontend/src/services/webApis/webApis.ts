@@ -37,5 +37,5 @@ export const createWorkspace = async (data: { name: string }) => {
 
 export const getWorkspaces = async () => {
   const response = await axiosInstances.instance.get(`/workspace`);
-  return response;
+  return response?.data?.data;
 };

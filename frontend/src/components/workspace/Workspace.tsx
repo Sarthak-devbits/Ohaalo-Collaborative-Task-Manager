@@ -69,12 +69,13 @@ export function Workspace() {
       )}
 
       {/* Workspace header */}
-      <div className="flex min-h-[60px] h-[60px] items-center justify-between border-b px-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b px-4 py-2 ">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold">{navBarTitle}</h1>
         </div>
-        <div className="flex items-center gap-2 ">
-          <div className="relative w-64 mr-2 ">
+
+        <div className="flex flex-col md:flex-row md:items-center gap-2 w-full md:w-auto">
+          <div className="relative w-full md:w-64">
             <Search className="absolute left-2.5 top-2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
@@ -84,9 +85,8 @@ export function Workspace() {
           </div>
 
           {location.pathname !== "/dashboard" && (
-            <>
-              {" "}
-              <div className="flex -space-x-2 mr-4">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 w-full md:w-auto">
+              <div className="flex -space-x-2">
                 {members?.slice(0, 3).map((member) => (
                   <Avatar
                     key={member.userId}
@@ -104,19 +104,22 @@ export function Workspace() {
                   </div>
                 )}
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleFilterSidebarOpen}
-              >
-                <Filter className="mr-2 h-4 w-4" />
-                Filter
-              </Button>
-              <Button size="sm" onClick={handleOpen}>
-                <Plus className="mr-2 h-4 w-4" />
-                New List
-              </Button>
-            </>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleFilterSidebarOpen}
+                >
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filter
+                </Button>
+                <Button size="sm" onClick={handleOpen}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  New List
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       </div>

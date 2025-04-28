@@ -6,6 +6,7 @@ export const initialState: IUserSliceInitalState = {
   userId: 0,
   username: "",
   email: "",
+  isLoggedIn: false,
 };
 
 const userSlice = createSlice({
@@ -17,6 +18,7 @@ const userSlice = createSlice({
       state.userId = userId;
       state.username = username;
       state.email = email;
+      state.isLoggedIn = true;
     },
     logout: () => {
       return { ...initialState };

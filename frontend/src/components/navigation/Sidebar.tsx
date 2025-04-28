@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,11 +19,21 @@ import {
 import { ohaloSvg } from "@/assets";
 import { useLocation, useNavigate } from "react-router-dom";
 import CreateWorkspaceModal from "../modals/CreateWorkSpaceModal";
+import { useSessionVariables } from "@/redux/useSessionVariables";
+import { useQuery } from "@tanstack/react-query";
+import { getWorkspaces } from "@/services/webApis/webApis";
+import { IWorkspace } from "@/interfaces/IWorkspaceInterface";
 
 export function Sidebar() {
+  const { userId } = useSessionVariables();
   const navigate = useNavigate();
   const location = useLocation();
   const [openWorkspace, setOpenWorkspace] = useState(false);
+
+  const { data: workspaces } = useQuery<IWorkspace[]>({
+    queryKey: ["user", userId],
+    queryFn: getWorkspaces,
+  });
 
   const handleOpenWorkspace = () => {
     setOpenWorkspace(true);
@@ -32,7 +42,7 @@ export function Sidebar() {
     setOpenWorkspace(false);
   };
 
-  const { currentUser, workspaces, setCurrentWorkspace, currentWorkspace } =
+  const { currentUser, setCurrentWorkspace, currentWorkspace } =
     useTaskContext();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [workspacesOpen, setWorkspacesOpen] = useState(true);
@@ -47,7 +57,24 @@ export function Sidebar() {
     navigate("/calender");
   };
 
-  console.log(location.pathname);
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1100) {
+        setIsCollapsed(true);
+      } else {
+        setIsCollapsed(false);
+      }
+    };
+
+    // Initial check on mount
+    handleResize();
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div
@@ -201,24 +228,23 @@ export function Sidebar() {
               </div>
               {workspacesOpen && (
                 <div className="mt-2 space-y-1">
-                  {workspaces.map((workspace) => (
-                    <Button
-                      key={workspace.id}
-                      variant={
-                        currentWorkspace?.id === workspace.id
-                          ? "secondary"
-                          : "ghost"
-                      }
-                      size="sm"
-                      className="w-full justify-start"
-                      onClick={() => setCurrentWorkspace(workspace)}
-                    >
-                      <div className="flex h-5 w-5 items-center justify-center rounded bg-primary/10 text-xs font-medium mr-2">
-                        {workspace.name.substring(0, 1)}
-                      </div>
-                      <span className="truncate">{workspace.name}</span>
-                    </Button>
-                  ))}
+                  {workspaces &&
+                    workspaces?.map((workspace) => (
+                      <Button
+                        key={workspace.id}
+                        variant={false ? "secondary" : "ghost"}
+                        size="sm"
+                        className="w-full justify-start"
+                        // onClick={() => setCurrentWorkspace(workspace)}
+                      >
+                        <div className="flex h-5 w-5 items-center justify-center rounded bg-primary/10 text-xs font-medium mr-2 capitalize">
+                          {workspace.name.substring(0, 1)}
+                        </div>
+                        <span className="truncate capitalize">
+                          {workspace.name}
+                        </span>
+                      </Button>
+                    ))}
                 </div>
               )}
             </div>

@@ -127,13 +127,13 @@ export function KanbanBoard() {
           handleClose={handleClose}
         />
       )}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2  lg:grid-cols-3 xl:grid-cols-4  2xl:grid-cols-5">
         {boardsListData.map((listData, index) => {
           return (
             <div
               key={index}
               className={cn(
-                "flex flex-col rounded-md border  ",
+                "flex flex-col rounded-md border",
                 getBackgroundColor(index)
               )}
               onDragOver={(e) => {
