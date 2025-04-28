@@ -8,6 +8,14 @@ export const boardSchema = z
       message:
         "Visibility is required and must be either 'private' or 'public'",
     }),
+    workspaceId: z.coerce
+      .number({
+        required_error: 'Workspace ID is required',
+        invalid_type_error: 'Workspace ID must be a number',
+      })
+      .refine((val) => val !== undefined, {
+        message: 'Workspace ID is required',
+      }),
     backgroundImg: z.string().min(1, 'Background image is required').url(),
   })
   .strict();

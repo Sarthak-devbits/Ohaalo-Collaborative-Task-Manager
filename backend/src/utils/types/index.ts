@@ -5,6 +5,7 @@ export interface IListByBoardIdFields {
   page?: number;
   limit?: number;
   isFiltered?: string;
+  workspaceId?:number
 }
 
 export type IQueryFields = Omit<IListByBoardIdFields, "boardId">;

@@ -19,7 +19,7 @@ const uploadPath = path.join(__dirname, '../uploads');
 export class BoardController {
   async createBoard(req: Request, res: Response) {
     const validateData = boardSchema.parse(req.body);
-    const { title, visibility, backgroundImg } = validateData;
+    const { title, visibility, backgroundImg, workspaceId } = validateData;
 
     const result = await prisma.$transaction(async (tx) => {
       const board = await tx.board.create({
@@ -28,6 +28,7 @@ export class BoardController {
           visibility,
           backgroundImg,
           ownerId: req.id,
+          workspaceId,
         },
       });
 
@@ -39,8 +40,21 @@ export class BoardController {
           userId: req.id,
         },
       });
+
+      // Add the board to the workspace
+      await tx.workSpaceUser.create({
+        data: {
+          userId: req.id,
+          workspaceId: workspaceId,
+          role: 'OWNER',
+          boardId: board.id,
+
+        },
+      });
       return board;
     });
+
+    // adding the board to Wokrkspace Users
 
     return res
       .status(httpStatusCodes[200].code)
@@ -48,7 +62,7 @@ export class BoardController {
   }
 
   async getAllBoards(req: Request, res: Response) {
-    const { search, page, limit, id, isFiltered } = req.query;
+    const { search, page, limit, id, isFiltered,workspaceId } = req.query;
 
     const queryFields: IQueryFields = {
       id: id ? +id : undefined,
@@ -56,9 +70,10 @@ export class BoardController {
       page: page ? +page : 0,
       limit: limit ? +limit : 10,
       isFiltered: isFiltered as string,
+      workspaceId:workspaceId ? +workspaceId : undefined,
     };
 
-    const boardsDataResponse = await boardService.getBoards(queryFields);
+    const boardsDataResponse = await boardService.getBoards(queryFields,req.id);
 
     return res
       .status(httpStatusCodes[200].code)

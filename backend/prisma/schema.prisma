@@ -1,204 +1,226 @@
-generator client {
-  provider = "prisma-client-js"
-}
+  generator client {
+    provider = "prisma-client-js"
+  }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+  datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+  }
 
-model User {
-  id           Int          @id @default(autoincrement())
-  username     String       @map("username")
-  email        String       @unique @map("email")
-  testId1      String       @default("testId1")
-  password     String       @map("password_hash")
-  role         String       @default("user") @map("role")
-  profileImg   String       @default("https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg") @map("profile_img")
-  jwtId        String       @map("jwt_id")
-  refreshToken String       @map("refresh_token")
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
-  likedBoards  BoardLikes[]
-  boardAccess  BoardUser[]
-  board        Board[]
-  cardMember   CardMember[]
-  comments     Comment[]
-  workspaces   WorkSpace[]
+  model User {
+    id           Int          @id @default(autoincrement())
+    username     String       @map("username")
+    email        String       @unique @map("email")
+    testId1      String       @default("testId1")
+    password     String       @map("password_hash")
+    role         String       @default("user") @map("role")
+    profileImg   String       @default("https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg") @map("profile_img")
+    jwtId        String       @map("jwt_id")
+    refreshToken String       @map("refresh_token")
+    createdAt    DateTime     @default(now()) @map("created_at")
+    updatedAt    DateTime     @updatedAt @map("updated_at")
+    likedBoards  BoardLikes[]
+    boardAccess  BoardUser[]
+    board        Board[]
+    cardMember   CardMember[]
+    comments     Comment[]
+    workspacesOwned   WorkSpace[]
+    workSpaceUser WorkSpaceUser[]
 
-  @@map("users")
-}
+    @@map("users")
+  }
 
-model WorkSpace {
-  id        Int      @id @default(autoincrement())
-  name      String   @map("name")
-  ownerId   Int      @map("owner_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  boards    Board[]
-  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  boardUsers BoardUser[]
-  @@map("workspaces")
-}
+  model WorkSpace {
+    id        Int      @id @default(autoincrement())
+    name      String   @map("name")
+    ownerId   Int      @map("owner_id")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    boards    Board[]
+    owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    users     WorkSpaceUser[]
+    @@map("workspaces") 
+  }
 
-model Board {
-  id            Int          @id @default(autoincrement())
-  ownerId       Int          @map("owner_id")
-  title         String       @map("title")
-  backgroundImg String       @map("background_img")
-  visibility    Visibility   @map("visibility") @default(PUBLIC)
-  archived      Boolean      @default(false) @map("archived")
-  createdAt     DateTime     @default(now()) @map("created_at")
-  updatedAt     DateTime     @updatedAt @map("updated_at")
-  likes         BoardLikes[]
-  users         BoardUser[]
-  owner         User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  workspaceId   Int          @map("workspace_id")
-  workspace     WorkSpace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  label         Label[]
-  lists         List[]
+  model WorkSpaceUser {
+    workspaceId Int      @map("workspace_id")
+    userId      Int      @map("user_id")
+    boardId     Int      @map("board_id")
+    role        WorkSpaceRole   @default(MEMBER) @map("role")
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
+    workspace   WorkSpace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    board       Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
-  @@map("boards")
-}
+    @@id([workspaceId, userId,boardId])
+    @@map("workspace_users")
+  }
 
-model BackgroundImages {
-  id        Int      @id @default(autoincrement())
-  imageUrl  String   @map("image_url")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-}
+  model Board {
+    id            Int          @id @default(autoincrement())
+    ownerId       Int          @map("owner_id")
+    title         String       @map("title")
+    backgroundImg String       @map("background_img")
+    visibility    Visibility   @map("visibility") @default(PUBLIC)
+    archived      Boolean      @default(false) @map("archived")
+    createdAt     DateTime     @default(now()) @map("created_at")
+    updatedAt     DateTime     @updatedAt @map("updated_at")
+    description   String?      @map("description") @default("Product description will be updated shortly.")
+    likes         BoardLikes[]
+    users         BoardUser[]
+    owner         User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    workspaceId   Int          @map("workspace_id")
+    workspace     WorkSpace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    workspaceUsers WorkSpaceUser[]
+    label         Label[]
+    lists         List[]
 
-model LayoutImages {
-  id        Int      @id @default(autoincrement())
-  imageUrl  String   @map("image_url")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-}
+    @@map("boards")
+  }
 
-model BoardUser {
-  boardId   Int         @map("board_id")
-  userId    Int         @map("user_id")
-  workspaceId Int         @map("workspace_id")
-  role      BoardRole   @map("role")
-  status    BoardStatus @default(ACTIVE) @map("status")
-  createdAt DateTime    @default(now()) @map("created_at")
-  updatedAt DateTime    @updatedAt @map("updated_at")
-  board     Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  User      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workspace WorkSpace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  model BackgroundImages {
+    id        Int      @id @default(autoincrement())
+    imageUrl  String   @map("image_url")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+  }
+
+  model LayoutImages {
+    id        Int      @id @default(autoincrement())
+    imageUrl  String   @map("image_url")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+  }
+
+  model BoardUser {
+    boardId   Int         @map("board_id")
+    userId    Int         @map("user_id")
   
-  @@id([boardId, userId,workspaceId])
-  @@map("board_users")
-}
+    role      BoardRole   @map("role")
+    status    BoardStatus @default(ACTIVE) @map("status")
+    createdAt DateTime    @default(now()) @map("created_at")
+    updatedAt DateTime    @updatedAt @map("updated_at")
+    board     Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
+    User      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+    
+    @@id([boardId, userId])
+    @@map("board_users")
+  }
 
-model BoardLikes {
-  userId    Int      @map("user_id")
-  boardId   Int      @map("board_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  model BoardLikes {
+    userId    Int      @map("user_id")
+    boardId   Int      @map("board_id")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([userId, boardId])
-  @@unique([userId, boardId])
-  @@map("board_likes")
-}
+    @@id([userId, boardId])
+    @@unique([userId, boardId])
+    @@map("board_likes")
+  }
 
-model List {
-  id        Int      @id @default(autoincrement())
-  listName  String   @map("list_name")
-  position  Int?      @map("position")
-  boardId   Int      @map("board_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  cards     Card[]
-  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  labels    Label[]  @relation("LabelToList")
+  model List {
+    id        Int      @id @default(autoincrement())
+    listName  String   @map("list_name")
+    position  Int?      @map("position")
+    boardId   Int      @map("board_id")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    cards     Card[]
+    board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+    labels    Label[]  @relation("LabelToList")
 
-  @@map("lists")
-}
+    @@map("lists")
+  }
 
-model Card {
-  id          Int          @id @default(autoincrement())
-  listId      Int          @map("list_id")
-  cardTitle   String       @map("card_title")
-  description String       @map("description")
-  bannerImg   String       @map("banner_img")
-  completed   Boolean      @map("completed")
-  dueDate     DateTime?    @map("due_date")
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-  position    Int?          @map("position")
-  attachments Attachment[]
-  member      CardMember[]
-  list        List         @relation(fields: [listId], references: [id], onDelete: Cascade)
-  comments    Comment[]
-  labels      Label[]      @relation("CardToLabel")
+  model Card {
+    id          Int          @id @default(autoincrement())
+    listId      Int          @map("list_id")
+    cardTitle   String       @map("card_title")
+    description String       @map("description")
+    bannerImg   String       @map("banner_img")
+    completed   Boolean      @map("completed")
+    dueDate     DateTime?    @map("due_date")
+    createdAt   DateTime     @default(now()) @map("created_at")
+    updatedAt   DateTime     @updatedAt @map("updated_at")
+    position    Int?          @map("position")
+    attachments Attachment[]
+    member      CardMember[]
+    list        List         @relation(fields: [listId], references: [id], onDelete: Cascade)
+    comments    Comment[]
+    labels      Label[]      @relation("CardToLabel")
 
-  @@map("cards")
-}
+    @@map("cards")
+  }
 
-model Attachment {
-  id        Int      @id @default(autoincrement())
-  cardId    Int      @map("card_id")
-  file      String   @map("file_path")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  card      Card     @relation(fields: [cardId], references: [id])
+  model Attachment {
+    id        Int      @id @default(autoincrement())
+    cardId    Int      @map("card_id")
+    file      String   @map("file_path")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    card      Card     @relation(fields: [cardId], references: [id])
 
-  @@map("attachments")
-}
+    @@map("attachments")
+  }
 
-model CardMember {
-  cardId Int  @map("card_id")
-  userId Int  @map("user_id")
-  card   Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  model CardMember {
+    cardId Int  @map("card_id")
+    userId Int  @map("user_id")
+    card   Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([cardId, userId])
-  @@map("card_members")
-}
+    @@id([cardId, userId])
+    @@map("card_members")
+  }
 
-model Label {
-  id        Int      @id @default(autoincrement())
-  labelName String   @map("label_name")
-  color     String   @map("color")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  boardId   Int
-  board     Board    @relation(fields: [boardId], references: [id])
-  cards     Card[]   @relation("CardToLabel")
-  list      List[]   @relation("LabelToList")
+  model Label {
+    id        Int      @id @default(autoincrement())
+    labelName String   @map("label_name")
+    color     String   @map("color")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    boardId   Int
+    board     Board    @relation(fields: [boardId], references: [id])
+    cards     Card[]   @relation("CardToLabel")
+    list      List[]   @relation("LabelToList")
 
-  @@map("labels")
-}
+    @@map("labels")
+  }
 
-model Comment {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @map("user_id")
-  cardId    Int      @map("card_id")
-  comment   String   @map("comment_text")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  model Comment {
+    id        Int      @id @default(autoincrement())
+    userId    Int      @map("user_id")
+    cardId    Int      @map("card_id")
+    comment   String   @map("comment_text")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("comments")
-}
+    @@map("comments")
+  }
 
-enum Visibility {
-  PRIVATE @map("private")
-  PUBLIC  @map("public")
-}
+  enum Visibility {
+    PRIVATE @map("private")
+    PUBLIC  @map("public")
+  }
 
-enum BoardRole {
-  ADMIN  @map("admin")
-  VIEWER @map("viewer")
-  MEMBER @map("member")
-}
+  enum WorkSpaceRole {
+    OWNER  @map("owner")
+    MEMBER @map("member")
+  }
 
-enum BoardStatus {
-  ACTIVE         @map("active")
-  REMOVED        @map("removed")
-  PENDING_INVITE @map("pending_invite")
-}
+  enum BoardRole {
+    ADMIN  @map("admin")
+    VIEWER @map("viewer")
+    MEMBER @map("member")
+  }
+
+  enum BoardStatus {
+    ACTIVE         @map("active")
+    REMOVED        @map("removed")
+    PENDING_INVITE @map("pending_invite")
+  }

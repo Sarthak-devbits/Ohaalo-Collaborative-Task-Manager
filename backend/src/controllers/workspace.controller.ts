@@ -44,9 +44,15 @@ export class WorkspaceController {
         name: true,
       },
     });
-
+    // Map the workspaces to add `value` = `id`
+    const formattedWorkspaces =
+      workspaces?.map((workspace) => ({
+        id: workspace.id,
+        name: workspace.name,
+        value: workspace.id,
+      })) || [];
     return res
       .status(httpStatusCodes[200].code)
-      .json(formResponse(httpStatusCodes[200].code, workspaces));
+      .json(formResponse(httpStatusCodes[200].code, formattedWorkspaces));
   }
 }
