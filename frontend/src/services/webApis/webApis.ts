@@ -9,6 +9,7 @@ export const createBoard = async (data: {
   title: string;
   visibility: string;
   backgroundImg: string;
+  workspaceId: number,
 }) => {
   const response = await axiosInstances.instance.post(`/board`, data);
   return response;

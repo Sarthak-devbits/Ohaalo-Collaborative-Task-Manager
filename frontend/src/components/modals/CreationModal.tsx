@@ -19,14 +19,21 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
-import { createBoard } from "@/services/webApis/webApis";
+import { createBoard, getWorkspaces } from "@/services/webApis/webApis";
+import { useSessionVariables } from "@/redux/useSessionVariables";
+import { IWorkspace } from "@/interfaces/IWorkspaceInterface";
 
+// Update schema to include workspaceId
 const creationSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   visibility: z.enum(["PUBLIC", "PRIVATE"], {
     required_error: "Please select visibility",
+  }),
+  workspaceId: z.coerce.number({
+    required_error: "Please select a workspace",
+    invalid_type_error: "Workspace must be selected",
   }),
 });
 
@@ -43,6 +50,12 @@ const CreationModal = ({
   open: boolean;
   handleClose: () => void;
 }) => {
+  const { userId } = useSessionVariables();
+
+  const { data: workspaces } = useQuery<IWorkspace[]>({
+    queryKey: ["user", userId],
+    queryFn: getWorkspaces,
+  });
 
   const {
     register,
@@ -55,6 +68,7 @@ const CreationModal = ({
     defaultValues: {
       title: "",
       visibility: "PUBLIC",
+      workspaceId: undefined,
     },
   });
 
@@ -65,6 +79,7 @@ const CreationModal = ({
         visibility: data.visibility,
         backgroundImg:
           "https://dev.to/docker/setting-up-aws-s3-bucket-locally-using-localstack-and-docker-l6b",
+        workspaceId: data.workspaceId,
       }),
     onSuccess: () => {
       toast({ title: "Board created successfully!" });
@@ -93,6 +108,7 @@ const CreationModal = ({
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
 
+          {/* Title input */}
           <div className="grid gap-2">
             <Input
               placeholder="Enter a title"
@@ -104,6 +120,34 @@ const CreationModal = ({
             )}
           </div>
 
+          {/* Workspace select */}
+          <div className="grid gap-2">
+            <Select
+              onValueChange={(value) => setValue("workspaceId", Number(value))}
+            >
+              <SelectTrigger className="capitalize">
+                <SelectValue placeholder="Select workspace" />
+              </SelectTrigger>
+              <SelectContent>
+                {workspaces?.map((workspace) => (
+                  <SelectItem
+                    key={workspace.id}
+                    value={workspace.id.toString()}
+                    className="capitalize"
+                  >
+                    {workspace.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.workspaceId && (
+              <p className="text-sm text-red-600">
+                {errors.workspaceId.message}
+              </p>
+            )}
+          </div>
+
+          {/* Visibility select */}
           <div className="grid gap-2">
             <Select
               onValueChange={(value) =>

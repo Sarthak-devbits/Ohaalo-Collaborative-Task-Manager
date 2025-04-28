@@ -25,10 +25,11 @@ import { getWorkspaces } from "@/services/webApis/webApis";
 import { IWorkspace } from "@/interfaces/IWorkspaceInterface";
 
 export function Sidebar() {
-  const { userId } = useSessionVariables();
   const navigate = useNavigate();
   const location = useLocation();
   const [openWorkspace, setOpenWorkspace] = useState(false);
+  const { userId } = useSessionVariables();
+
 
   const { data: workspaces } = useQuery<IWorkspace[]>({
     queryKey: ["user", userId],
