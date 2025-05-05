@@ -1,8 +1,28 @@
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import React from "react";
 import NewCreationCard from "./NewCreationCard";
+import { useQuery } from "@tanstack/react-query";
+import { getBoards } from "@/services/webApis/webApis";
 
 const Dashboard = () => {
+  const recentViewedParams = {
+    workspaceId: 1,
+    page: 0,
+    limit: 100,
+  };
+
+  const {
+    data: recentBoards,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["boards", recentViewedParams], // key depends on params to refetch when params change
+    queryFn: () => getBoards(recentViewedParams),
+    enabled: !!recentViewedParams.workspaceId, // example: only fetch if workspaceId exists
+    staleTime: 1000 * 60 * 5, // 5 minutes (optional tuning)
+  });
+
+
   return (
     <div>
       <div>

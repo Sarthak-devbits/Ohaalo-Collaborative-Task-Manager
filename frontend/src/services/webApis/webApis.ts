@@ -1,3 +1,4 @@
+import { IGetBoardsData } from "@/interfaces/IParams";
 import axiosInstances from "../axios";
 
 export const loginApi = async (data: { email: string; password: string }) => {
@@ -9,7 +10,7 @@ export const createBoard = async (data: {
   title: string;
   visibility: string;
   backgroundImg: string;
-  workspaceId: number,
+  workspaceId: number;
 }) => {
   const response = await axiosInstances.instance.post(`/board`, data);
   return response;
@@ -38,5 +39,12 @@ export const createWorkspace = async (data: { name: string }) => {
 
 export const getWorkspaces = async () => {
   const response = await axiosInstances.instance.get(`/workspace`);
+  return response?.data?.data;
+};
+
+export const getBoards = async (params: IGetBoardsData) => {
+  const response = await axiosInstances.instance.get(`/board`, {
+    params,
+  });
   return response?.data?.data;
 };
