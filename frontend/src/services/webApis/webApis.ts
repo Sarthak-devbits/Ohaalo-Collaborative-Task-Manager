@@ -42,6 +42,8 @@ export const getWorkspaces = async () => {
   return response?.data?.data;
 };
 
+console.log("mrging to main");
+
 export const getBoards = async (params: IGetBoardsData) => {
   const response = await axiosInstances.instance.get(`/board`, {
     params,
