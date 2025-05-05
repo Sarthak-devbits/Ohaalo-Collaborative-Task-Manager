@@ -10,7 +10,6 @@ export const errorHandler = (
   next: NextFunction
 ) => {
 
-  console.log(err)
   /** ✅ Handle Zod validation errors */
   if (err instanceof ZodError) {
     return res.status(400).json({

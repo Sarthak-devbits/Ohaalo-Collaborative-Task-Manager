@@ -7,11 +7,15 @@ import { IEditBoard } from '@/utils/types/board.types';
 
 export class BoardServices {
   async getBoards(queryFields: IQueryFields, userId: number) {
-    const { id, isFiltered, limit = 10, page = 0, search } = queryFields;
+    const { id, isFiltered, limit = 10, page = 0, search,workspaceId } = queryFields;
     const filters: any = {};
 
     const skipRecords = isFiltered ? 0 : page ? page * limit : 0;
     const takeRecords = isFiltered ? undefined : limit ? limit : 10;
+
+    if(workspaceId){
+      filters.workspaceId = workspaceId
+    }
 
     if (search) {
       filters.OR = [
@@ -31,6 +35,18 @@ export class BoardServices {
         boardId: true,
       },
     });
+    
+    const workSpaceUsers = await prisma?.workSpaceUser.findMany({
+      where: {
+        userId: +userId,
+      },
+      select: {
+        boardId: true,
+      },
+    });
+
+    console.log(workSpaceUsers)
+
     const boardIds = boardUsers.map((item) => item.boardId);
 
     if (!id) {
@@ -40,6 +56,8 @@ export class BoardServices {
     } else if (!boardIds.includes(+id)) {
       throw new AppError('Board not found or unauthorized', 403);
     }
+
+    console.log(filters)
 
     // Check if the user is part of the workspace
     const baordsResult = await prisma?.board.findMany({
@@ -55,6 +73,8 @@ export class BoardServices {
       skip: skipRecords,
       take: takeRecords,
     });
+
+
 
     return isFiltered
       ? baordsResult?.map((item) => {
