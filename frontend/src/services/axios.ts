@@ -2,7 +2,6 @@ import axios from "axios";
 import { logout } from "../redux/slice/userSlice";
 import { Store } from "@reduxjs/toolkit";
 
-
 let store: Store;
 
 export const injectStore = (_store: Store) => {
@@ -37,7 +36,6 @@ instance.interceptors.request.use((config) => {
 
   return config;
 });
-
 
 // Refresh token function
 const refreshAuthToken = async () => {
@@ -123,11 +121,9 @@ instance.interceptors.response.use(
         }
       });
     }
-
     return Promise.reject(error);
   }
 );
-
 
 const axiosInstances = {
   instance,

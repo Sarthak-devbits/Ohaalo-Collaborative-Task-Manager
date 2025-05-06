@@ -1,7 +1,7 @@
 import CreationModal from "@/components/modals/CreationModal";
 import { useState } from "react";
 
-const NewCreationCard = () => {
+const NewCreationCard = ({workspaceId}:{workspaceId?:number}) => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -20,6 +20,7 @@ const NewCreationCard = () => {
           description="  Create a new board for real-time collaboration and sharing."
           open={open}
           handleClose={handleClose}
+          workspaceId={workspaceId}
         />
       )}
       <div

@@ -42,11 +42,20 @@ export const getWorkspaces = async () => {
   return response?.data?.data;
 };
 
-console.log("mrging to main");
 
 export const getBoards = async (params: IGetBoardsData) => {
   const response = await axiosInstances.instance.get(`/board`, {
     params,
   });
+  return response?.data?.data;
+};
+
+export const recentlyViewedBoards = async () => {
+  const response = await axiosInstances.instance.get(`/board/recently-viewed`);
+  return response?.data?.data;
+};
+
+export const workspaceDetailedData = async() => {
+  const response =await axiosInstances.instance.get(`/workspace/detail`);
   return response?.data?.data;
 };

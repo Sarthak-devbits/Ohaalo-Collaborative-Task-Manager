@@ -30,7 +30,6 @@ export function Sidebar() {
   const [openWorkspace, setOpenWorkspace] = useState(false);
   const { userId } = useSessionVariables();
 
-
   const { data: workspaces } = useQuery<IWorkspace[]>({
     queryKey: ["user", userId],
     queryFn: getWorkspaces,
@@ -236,7 +235,9 @@ export function Sidebar() {
                         variant={false ? "secondary" : "ghost"}
                         size="sm"
                         className="w-full justify-start"
-                        // onClick={() => setCurrentWorkspace(workspace)}
+                        onClick={() => {
+                          navigate(`/dashboard?workspaceid=${workspace.id}`);
+                        }}
                       >
                         <div className="flex h-5 w-5 items-center justify-center rounded bg-primary/10 text-xs font-medium mr-2 capitalize">
                           {workspace.name.substring(0, 1)}

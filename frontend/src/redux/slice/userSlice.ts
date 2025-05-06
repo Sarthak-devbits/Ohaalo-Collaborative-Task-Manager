@@ -21,6 +21,7 @@ const userSlice = createSlice({
       state.isLoggedIn = true;
     },
     logout: () => {
+      console.log(initialState)
       return { ...initialState };
     },
     updateName: (state, action: PayloadAction<string>) => {

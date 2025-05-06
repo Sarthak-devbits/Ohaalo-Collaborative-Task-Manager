@@ -277,6 +277,7 @@ export class BoardController {
         title: true,
         visibility: true,
         backgroundImg: true,
+        description:true,
         archived: true,
         createdAt: true,
         updatedAt: true,

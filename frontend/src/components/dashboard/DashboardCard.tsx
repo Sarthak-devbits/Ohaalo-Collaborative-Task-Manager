@@ -1,10 +1,11 @@
 import { useTaskContext } from "@/contexts/TaskContext";
+import { IBoard } from "@/interfaces/Iboards";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { ArrowRight } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const DashboardCard = () => {
+const DashboardCard = ({ board }: { board: IBoard }) => {
   const navigate = useNavigate();
   const { currentWorkspace, users } = useTaskContext();
 
@@ -25,11 +26,8 @@ const DashboardCard = () => {
       onClick={handleNavigateToboard}
     >
       <div>
-        <h4 className="font-light">Tlescpoes 101</h4>
-        <p className="font-light text-xs text-gray-400 ">
-          The beauty of astronomy is that anybody can do it. From the tiniest
-          baby to the most.
-        </p>
+        <h4 className="font-light capitalize">{board?.title}</h4>
+        <p className="font-light text-xs text-gray-400 capitalize">{board?.description}</p>
       </div>
       <div className="flex items-center justify-between text-gray-400">
         <div className="flex -space-x-2 mr-4">

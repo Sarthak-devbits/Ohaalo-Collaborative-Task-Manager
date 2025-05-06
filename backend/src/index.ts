@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(cors());
 app.use(helmet());
 app.use(morgan('dev'));
-app.use(limiter);
+// app.use(limiter);
 
 // Routes
 app.use('/api', routes);

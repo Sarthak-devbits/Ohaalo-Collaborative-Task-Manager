@@ -19,7 +19,7 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import { createBoard, getWorkspaces } from "@/services/webApis/webApis";
 import { useSessionVariables } from "@/redux/useSessionVariables";
@@ -44,12 +44,15 @@ const CreationModal = ({
   description,
   open = false,
   handleClose,
+  workspaceId,
 }: {
   title: string;
   description: string;
   open: boolean;
   handleClose: () => void;
+  workspaceId?: number;
 }) => {
+  const queryClient = useQueryClient();
   const { userId } = useSessionVariables();
 
   const { data: workspaces } = useQuery<IWorkspace[]>({
@@ -61,6 +64,7 @@ const CreationModal = ({
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
     reset,
   } = useForm<CreationFormData>({
@@ -68,7 +72,7 @@ const CreationModal = ({
     defaultValues: {
       title: "",
       visibility: "PUBLIC",
-      workspaceId: undefined,
+      workspaceId: workspaceId ?? undefined,
     },
   });
 
@@ -83,6 +87,8 @@ const CreationModal = ({
       }),
     onSuccess: () => {
       toast({ title: "Board created successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["recentboards"] });
+      queryClient.invalidateQueries({ queryKey: ["detailed-workspace"] });
       reset();
       handleClose();
     },
@@ -121,9 +127,12 @@ const CreationModal = ({
           </div>
 
           {/* Workspace select */}
+
           <div className="grid gap-2">
             <Select
+              value={watch("workspaceId")?.toString()} // keeps the UI in sync with form state
               onValueChange={(value) => setValue("workspaceId", Number(value))}
+              disabled={!!workspaceId}
             >
               <SelectTrigger className="capitalize">
                 <SelectValue placeholder="Select workspace" />
@@ -134,6 +143,7 @@ const CreationModal = ({
                     key={workspace.id}
                     value={workspace.id.toString()}
                     className="capitalize"
+                    disabled={workspaceId ? true : false}
                   >
                     {workspace.name}
                   </SelectItem>

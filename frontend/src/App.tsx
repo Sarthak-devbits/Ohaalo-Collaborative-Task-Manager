@@ -11,6 +11,9 @@ import LoginPage from "./pages/auth/LoginPage";
 import SignUpPage from "./pages/auth/SignUpPage";
 import { Provider } from "react-redux";
 import store from "./redux/store";
+import ProtectedComponent from "./components/protectedComponent/ProtectedComponent";
+import { injectStore } from "./services/axios.ts";
+injectStore(store);
 
 const queryClient = new QueryClient();
 
@@ -22,11 +25,46 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />}>
-              <Route path="board" element={<SingleBoard />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="task" element={<Dashboard />} />
-              <Route path="calender" element={<Dashboard />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedComponent>
+                  <Index />
+                </ProtectedComponent>
+              }
+            >
+              <Route
+                path="board"
+                element={
+                  <ProtectedComponent>
+                    <SingleBoard />
+                  </ProtectedComponent>
+                }
+              />
+              <Route
+                path="dashboard"
+                element={
+                  <ProtectedComponent>
+                    <Dashboard />
+                  </ProtectedComponent>
+                }
+              />
+              <Route
+                path="task"
+                element={
+                  <ProtectedComponent>
+                    <Dashboard />
+                  </ProtectedComponent>
+                }
+              />
+              <Route
+                path="calender"
+                element={
+                  <ProtectedComponent>
+                    <Dashboard />
+                  </ProtectedComponent>
+                }
+              />
               {/* Add more child routes of workspace here */}
             </Route>
             <Route path="/login" element={<LoginPage />} />
