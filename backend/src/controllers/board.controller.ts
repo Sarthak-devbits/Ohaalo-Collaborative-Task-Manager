@@ -48,7 +48,6 @@ export class BoardController {
           workspaceId: workspaceId,
           role: 'OWNER',
           boardId: board.id,
-
         },
       });
       return board;
@@ -62,7 +61,7 @@ export class BoardController {
   }
 
   async getAllBoards(req: Request, res: Response) {
-    const { search, page, limit, id, isFiltered,workspaceId } = req.query;
+    const { search, page, limit, id, isFiltered, workspaceId } = req.query;
 
     const queryFields: IQueryFields = {
       id: id ? +id : undefined,
@@ -70,10 +69,13 @@ export class BoardController {
       page: page ? +page : 0,
       limit: limit ? +limit : 10,
       isFiltered: isFiltered as string,
-      workspaceId:workspaceId ? +workspaceId : undefined,
+      workspaceId: workspaceId ? +workspaceId : undefined,
     };
 
-    const boardsDataResponse = await boardService.getBoards(queryFields,req.id);
+    const boardsDataResponse = await boardService.getBoards(
+      queryFields,
+      req.id
+    );
 
     return res
       .status(httpStatusCodes[200].code)
@@ -253,4 +255,36 @@ export class BoardController {
   }
 
   async createLayoutImages(req: Request, res: Response) {}
+
+  async getRecentlyViewed(req: Request, res: Response) {
+    // THIS API IS NOT YET IMPLEMENTED
+
+    const ownerId = req.id; // assuming authentication middleware sets req.id
+
+    if (!ownerId) {
+      throw new AppError('Unauthorized', 401);
+    }
+    const recentlyViewedBoards = await prisma?.board.findMany({
+      where: {
+        users: {
+          some: {
+            userId: ownerId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        visibility: true,
+        backgroundImg: true,
+        archived: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return res
+      .status(httpStatusCodes[200].code)
+      .json(formResponse(httpStatusCodes[200].code, recentlyViewedBoards));
+  }
 }

@@ -6,6 +6,7 @@ export const workspaceRoutes = Router();
 const workspace = new WorkspaceController();
 
 workspaceRoutes.get('/workspace', verifyToken, workspace.getWorkspaces);
+workspaceRoutes.get('/workspace/detail', verifyToken, workspace.getDetailedWorkspaces);
 workspaceRoutes.post('/workspace', verifyToken, workspace.createWorkspace);
 
 // cardRoutes.post('/gpt', gptControllerInstance.getGeminiData);

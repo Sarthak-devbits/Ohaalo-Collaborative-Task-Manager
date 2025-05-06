@@ -9,6 +9,7 @@ const boardController = new BoardController();
 
 boardRoutes.get('/board', verifyToken, boardController.getAllBoards);
 boardRoutes.get('/board/is-liked', verifyToken, boardController.isBoardLikedByUser);
+boardRoutes.get('/board/recently-viewed', verifyToken, boardController.getRecentlyViewed);
 
 boardRoutes.post('/board', verifyToken, boardController.createBoard);
 boardRoutes.post('/board/like', verifyToken, boardController.likeBoard);

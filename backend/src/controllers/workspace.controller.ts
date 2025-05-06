@@ -55,4 +55,46 @@ export class WorkspaceController {
       .status(httpStatusCodes[200].code)
       .json(formResponse(httpStatusCodes[200].code, formattedWorkspaces));
   }
+  async getDetailedWorkspaces(req: Request, res: Response) {
+    const ownerId = req.id; // assuming authentication middleware sets req.id
+
+    if (!ownerId) {
+      throw new AppError('Unauthorized', 401);
+    }
+
+    const workspaceData = await prisma?.workSpace.findMany({
+      where: {
+        users: {
+          some: {
+            userId: ownerId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        boards: {
+          where: {
+            users: {
+              some: {
+                userId: ownerId,
+              },
+            },
+          },
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            backgroundImg: true,
+          },
+        },
+      },
+    });
+
+    return res
+      .status(httpStatusCodes[200].code)
+      .json(formResponse(httpStatusCodes[200].code, workspaceData));
+  }
+
+  
 }

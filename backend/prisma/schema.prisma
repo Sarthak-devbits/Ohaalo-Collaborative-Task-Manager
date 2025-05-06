@@ -96,7 +96,6 @@
   model BoardUser {
     boardId   Int         @map("board_id")
     userId    Int         @map("user_id")
-  
     role      BoardRole   @map("role")
     status    BoardStatus @default(ACTIVE) @map("status")
     createdAt DateTime    @default(now()) @map("created_at")
@@ -131,7 +130,6 @@
     cards     Card[]
     board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
     labels    Label[]  @relation("LabelToList")
-
     @@map("lists")
   }
 
