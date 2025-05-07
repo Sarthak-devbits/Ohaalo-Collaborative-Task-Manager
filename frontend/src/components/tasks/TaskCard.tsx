@@ -68,11 +68,11 @@ export function TaskCard({ cardData }) {
       >
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <h3 className="font-medium text-sm line-clamp-2">
+            <h3 className="font-medium text-sm line-clamp-2 capitalize">
               {cardData?.cardTitle}
             </h3>
             <p className="text-xs text-muted-foreground line-clamp-2">
-              description
+              {cardData?.description}
             </p>
           </div>
         </div>

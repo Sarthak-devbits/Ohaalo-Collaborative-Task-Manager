@@ -111,17 +111,22 @@ export class ListServices {
       where: filters,
       orderBy: [
         {
-          updatedAt: 'desc',
+          updatedAt: 'asc',
         },
         {
-          id: 'desc',
+          id: 'asc',
         },
       ],
+      select: {
+        id: true,
+        listName: true,
+        position: true,
+        cards: true,
+      },
       skip: skipRecords,
       take: takeRecords,
     });
 
     return listFilteredResponse;
   }
-  
 }

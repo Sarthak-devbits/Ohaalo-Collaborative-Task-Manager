@@ -1,5 +1,6 @@
-import { IGetBoardsData } from "@/interfaces/IParams";
+import { IGetBoardsData, IGetListData } from "@/interfaces/IParams";
 import axiosInstances from "../axios";
+import { moveCardData } from "@/components/board/KanbanBoard";
 
 export const loginApi = async (data: { email: string; password: string }) => {
   const response = await axiosInstances.instance.post(`/auth/login`, data);
@@ -42,7 +43,6 @@ export const getWorkspaces = async () => {
   return response?.data?.data;
 };
 
-
 export const getBoards = async (params: IGetBoardsData) => {
   const response = await axiosInstances.instance.get(`/board`, {
     params,
@@ -55,7 +55,19 @@ export const recentlyViewedBoards = async () => {
   return response?.data?.data;
 };
 
-export const workspaceDetailedData = async() => {
-  const response =await axiosInstances.instance.get(`/workspace/detail`);
+export const workspaceDetailedData = async () => {
+  const response = await axiosInstances.instance.get(`/workspace/detail`);
   return response?.data?.data;
+};
+
+export const getListDetails = async (params: IGetListData) => {
+  const response = await axiosInstances.instance.get(`/list`, {
+    params,
+  });
+  return response?.data?.data;
+};
+
+export const moveCardApi = async (data: moveCardData) => {
+  const response = await axiosInstances.instance.put(`/card/move`, data);
+  return response;
 };

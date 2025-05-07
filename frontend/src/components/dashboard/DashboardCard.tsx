@@ -9,8 +9,8 @@ const DashboardCard = ({ board }: { board: IBoard }) => {
   const navigate = useNavigate();
   const { currentWorkspace, users } = useTaskContext();
 
-  const handleNavigateToboard = () => {
-    navigate("/board");
+  const handleNavigateToboard = ( boardId: number) => {
+    navigate(`/board?boardid=${boardId}`);
   };
 
   const members = currentWorkspace?.members
@@ -23,11 +23,13 @@ const DashboardCard = ({ board }: { board: IBoard }) => {
   return (
     <div
       className="max-w-[362px] min-h-[144px] w-full rounded-md p-2 py-3 bg-[#EEF7FB] flex flex-col justify-between cursor-pointer"
-      onClick={handleNavigateToboard}
+      onClick={() => handleNavigateToboard(board?.id)}
     >
       <div>
         <h4 className="font-light capitalize">{board?.title}</h4>
-        <p className="font-light text-xs text-gray-400 capitalize">{board?.description}</p>
+        <p className="font-light text-xs text-gray-400 capitalize">
+          {board?.description}
+        </p>
       </div>
       <div className="flex items-center justify-between text-gray-400">
         <div className="flex -space-x-2 mr-4">

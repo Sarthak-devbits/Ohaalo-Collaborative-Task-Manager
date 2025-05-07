@@ -12,13 +12,12 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import { createCard } from "@/services/webApis/webApis";
 
 const creationSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
-  listId: z.number().min(1, "ListId is missing"),
 });
 
 type CreationFormData = z.infer<typeof creationSchema>;
@@ -28,11 +27,15 @@ const CreateCard = ({
   description,
   open = false,
   handleClose,
+  listId,
+  boardId,
 }: {
   title: string;
   description: string;
   open: boolean;
   handleClose: () => void;
+  listId: number;
+  boardId: number;
 }) => {
   const {
     register,
@@ -44,18 +47,20 @@ const CreateCard = ({
     resolver: zodResolver(creationSchema),
     defaultValues: {
       title: "",
-      listId: 1,
     },
   });
+
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (data: CreationFormData) =>
       createCard({
         cardTitle: data.title,
-        listId: data.listId,
+        listId: listId,
       }),
     onSuccess: () => {
       toast({ title: "Task created successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["list", boardId] });
       reset();
       handleClose();
     },

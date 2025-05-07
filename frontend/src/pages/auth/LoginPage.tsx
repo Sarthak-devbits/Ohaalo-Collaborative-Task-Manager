@@ -32,7 +32,7 @@ const LoginPage = () => {
           title: "Login successful",
           description: "Welcome back!",
         });
-        console.log(response?.data?.data);
+   
         const result = response?.data?.data;
         const accessToken = result?.accessToken;
         const refreshToken = result?.refreshToken;

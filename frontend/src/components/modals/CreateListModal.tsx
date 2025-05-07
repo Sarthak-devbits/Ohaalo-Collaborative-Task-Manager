@@ -12,13 +12,12 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import { createList } from "@/services/webApis/webApis";
 
 const creationSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
-  boardId: z.number().min(1, "BoardId is missing"),
 });
 
 type CreationFormData = z.infer<typeof creationSchema>;
@@ -28,12 +27,15 @@ const CreateListModal = ({
   description,
   open = false,
   handleClose,
+  boardId,
 }: {
   title: string;
   description: string;
   open: boolean;
   handleClose: () => void;
+  boardId: number;
 }) => {
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -44,7 +46,6 @@ const CreateListModal = ({
     resolver: zodResolver(creationSchema),
     defaultValues: {
       title: "",
-      boardId: 5,
     },
   });
 
@@ -52,10 +53,11 @@ const CreateListModal = ({
     mutationFn: (data: CreationFormData) =>
       createList({
         listName: data.title,
-        boardId: data.boardId,
+        boardId: +boardId,
       }),
     onSuccess: () => {
       toast({ title: "List created successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["list", +boardId] });
       reset();
       handleClose();
     },

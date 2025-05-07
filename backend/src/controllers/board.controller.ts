@@ -277,7 +277,7 @@ export class BoardController {
         title: true,
         visibility: true,
         backgroundImg: true,
-        description:true,
+        description: true,
         archived: true,
         createdAt: true,
         updatedAt: true,
@@ -288,4 +288,6 @@ export class BoardController {
       .status(httpStatusCodes[200].code)
       .json(formResponse(httpStatusCodes[200].code, recentlyViewedBoards));
   }
+
+  
 }

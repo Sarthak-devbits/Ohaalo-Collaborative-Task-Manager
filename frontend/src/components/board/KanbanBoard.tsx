@@ -1,112 +1,120 @@
 import React, { useEffect, useState } from "react";
-import {
-  boardsListData as listData,
-  useTaskContext,
-} from "@/contexts/TaskContext";
-import { BoardColumn } from "./BoardColumn";
-import { Status } from "@/types";
-import { formatStatusTitle } from "@/data/mockData";
-import { TaskCard } from "../tasks/TaskCard";
-import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
-import CreationModal from "../modals/CreationModal";
+import { cn } from "@/lib/utils";
+import { toast } from "@/components/ui/use-toast";
+import { Button } from "../ui/button";
+import { BoardColumn } from "./BoardColumn";
+import { TaskCard } from "../tasks/TaskCard";
 import CreateCard from "../modals/CreateCardModal";
+import { moveCardApi } from "@/services/webApis/webApis";
+import { IList } from "@/interfaces/Ilist";
 
-export function KanbanBoard() {
-  const [boardsListData, setBoardsListData] = useState([]);
-  const [draggingCardId, setDraggingCardId] = useState<number | null>();
-  const [draggingSourceId, setDraggingSourceId] = useState<number | null>();
+export type moveCardData = {
+  sourceListId: number;
+  destinationListId: number;
+  cardId: number;
+};
+
+export function KanbanBoard({
+  boardListData,
+  boardId,
+}: {
+  boardListData: IList[];
+  boardId: number;
+}) {
+  const [selectedListId, setSelectedListId] = useState<number>(-1);
+  const [boardsListData, setBoardsListData] = useState<IList[]>([]);
+  const [draggingCardId, setDraggingCardId] = useState<number | null>(null);
+  const [draggingSourceId, setDraggingSourceId] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  const queryClient = useQueryClient();
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
-    const sortedList = [...listData].sort((a, b) => a.position - b.position);
-    setBoardsListData(sortedList);
-  }, [listData]);
+    setBoardsListData(boardListData);
+  }, [boardListData]);
 
-  // const { board, moveTask } = useTaskContext();
+  const mutation = useMutation({
+    mutationFn: (data: moveCardData) => moveCardApi(data),
 
-  // const [draggingTask, setDraggingTask] = useState<string | null>(null);
-  // const [sourceStatus, setSourceStatus] = useState<Status | null>(null);
+    onMutate: async (data) => {
 
-  // const handleDragStart = (taskId: string, status: Status) => {
-  //   setDraggingTask(taskId);
-  //   setSourceStatus(status);
-  // };
+      const previousData = [...boardsListData];
 
-  // const handleDragOver = (e: React.DragEvent) => {
-  //   e.preventDefault();
-  // };
+      const movedCard = previousData
+        .find((item) => item.id === data.sourceListId)
+        ?.cards.find((card) => card.id === data.cardId);
 
-  // const handleDrop = (e: React.DragEvent, destinationStatus: Status) => {
-  //   e.preventDefault();
+      if (!movedCard) return { previousData };
 
-  //   console.log(board)
-  //   console.log(destinationStatus)
+      const updatedList = previousData.map((item) => {
+        if (item.id === data.destinationListId) {
+          return {
+            ...item,
+            cards: [movedCard, ...item.cards],
+          };
+        }
+        if (item.id === data.sourceListId) {
+          return {
+            ...item,
+            cards: item.cards.filter((card) => card.id !== movedCard.id),
+          };
+        }
+        return item;
+      });
 
-  //   const taskId = e.dataTransfer.getData("taskId");
+      setBoardsListData(updatedList);
+      return { previousData };
+    },
 
-  //   if (!taskId || !sourceStatus) return;
+    onError: (err:any, _vars, context) => {
+      setBoardsListData(context?.previousData || []);
+      toast({
+        title: "Failed to move Task",
+        description: err?.response?.data?.message || "Something went wrong",
+        variant: "destructive",
+      });
+    },
 
-  //   // Calculate the index where the task should be inserted
-  //   // For simplicity, we'll just append to the end of the destination column
-  //   const index = board.columns[destinationStatus].taskIds.length;
+    onSuccess: () => {
+      toast({ title: "Task moved successfully!" });
+    },
 
-  //   moveTask(taskId, sourceStatus, destinationStatus, index);
+    onSettled: () => {
+      // queryClient.invalidateQueries(["boardListData"]);
+    },
+  });
 
-  //   setDraggingTask(null);
-  //   setSourceStatus(null);
-  // };
-
-  const handleDragStart = (cardId, _sourceId) => {
+  const handleDragStart = (cardId: number, sourceId: number) => {
     setDraggingCardId(cardId);
-    setDraggingSourceId(_sourceId);
+    setDraggingSourceId(sourceId);
   };
 
   const handleDrop = (e: React.DragEvent, destinationId: number) => {
     e.preventDefault();
-    const destinationListsCards = boardsListData.find(
-      (item) => item?.id == destinationId
-    ).cards;
-    if (destinationId === draggingSourceId) {
-      return;
-    }
-    if (destinationListsCards.find((item) => item.id == draggingCardId)) {
-      return;
-    }
 
-    const movedCard = boardsListData
-      .find((item) => item.id == draggingSourceId)
-      .cards.find((item) => item.id == draggingCardId);
+    const destinationList = boardsListData.find((item) => item.id === destinationId);
+    if (!destinationList) return;
 
-    const updatedList = boardsListData.map((item) => {
-      if (item.id === destinationId) {
-        return {
-          ...item,
-          cards: [movedCard, ...item.cards], // immutably add movedCard
-        };
-      }
-      if (item.id === draggingSourceId) {
-        return {
-          ...item,
-          cards: item.cards.filter((card) => card.id !== movedCard.id),
-        };
-      }
-      return item; // return unchanged item
+    if (destinationId === draggingSourceId) return;
+
+    const isCardAlreadyThere = destinationList.cards.find((card) => card.id === draggingCardId);
+    if (isCardAlreadyThere) return;
+
+    mutation.mutate({
+      sourceListId: draggingSourceId!,
+      destinationListId: destinationId,
+      cardId: draggingCardId!,
     });
 
-    setBoardsListData(updatedList);
     setDraggingCardId(null);
     setDraggingSourceId(null);
   };
+
   const getBackgroundColor = (index: number) => {
     const mod = (index + 1) % 6;
     if (mod === 0 || mod === 1) return "bg-[red]/10";
@@ -114,7 +122,7 @@ export function KanbanBoard() {
     if (mod === 3) return "bg-warning/10";
     if (mod === 4) return "bg-success/10";
     if (mod === 5) return "bg-[black]/10";
-    return "bg-muted/30"; // fallback
+    return "bg-muted/30";
   };
 
   return (
@@ -125,62 +133,53 @@ export function KanbanBoard() {
           description="Define a new task to keep your team organized and on track."
           open={open}
           handleClose={handleClose}
+          listId={selectedListId}
+          boardId={boardId}
         />
       )}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2  lg:grid-cols-3 xl:grid-cols-4  2xl:grid-cols-5">
-        {boardsListData.map((listData, index) => {
-          return (
-            <div
-              key={index}
-              className={cn(
-                "flex flex-col rounded-md border",
-                getBackgroundColor(index)
-              )}
-              onDragOver={(e) => {
-                e.preventDefault();
-              }}
-              onDrop={(e) => {
-                handleDrop(e, listData.id);
-              }}
-            >
-              <div className="flex items-center justify-between border-b px-3 py-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">
-                    {listData?.listName}
-                  </span>
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs">
-                    {listData?.cards?.length}
-                  </span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7"
-                  title="Add new task"
-                  onClick={handleOpen}
-                >
-                  <Plus size={14} />
-                </Button>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        {boardsListData?.map((listData, index) => (
+          <div
+            key={listData.id}
+            className={cn("flex flex-col rounded-md border min-h-64", getBackgroundColor(index))}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => handleDrop(e, listData.id)}
+          >
+            <div className="flex items-center justify-between border-b px-3 py-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium capitalize">{listData?.listName}</span>
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs">
+                  {listData?.cards?.length}
+                </span>
               </div>
-              <div className="flex-1 overflow-auto p-2 space-y-2">
-                {listData.cards.map((cardData, index) => {
-                  return (
-                    <div
-                      draggable
-                      key={index}
-                      className="min-h-10 w-full"
-                      onDragStart={(e) => {
-                        handleDragStart(cardData.id, listData.id);
-                      }}
-                    >
-                      <TaskCard cardData={cardData} />
-                    </div>
-                  );
-                })}
-              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                title="Add new task"
+                onClick={() => {
+                  setSelectedListId(listData.id);
+                  handleOpen();
+                }}
+              >
+                <Plus size={14} />
+              </Button>
             </div>
-          );
-        })}
+            <div className="flex-1 overflow-auto p-2 space-y-2">
+              {listData.cards.map((cardData) => (
+                <div
+                  key={cardData.id}
+                  draggable
+                  className="min-h-10 w-full"
+                  onDragStart={() => handleDragStart(cardData.id, listData.id)}
+                >
+                  <TaskCard cardData={cardData} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

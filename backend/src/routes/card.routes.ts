@@ -6,5 +6,8 @@ export const cardRoutes = Router();
 const cardController = new CardController();
 
 cardRoutes.post('/card', verifyToken, cardController.createCard);
+cardRoutes.put('/card/move', verifyToken, cardController.moveCard);
+
+
 
 // cardRoutes.post('/gpt', gptControllerInstance.getGeminiData);

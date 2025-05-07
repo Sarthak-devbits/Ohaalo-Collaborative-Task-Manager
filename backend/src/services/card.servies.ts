@@ -45,6 +45,29 @@ export class CardServices {
     return card;
   }
 
+  async moveCard({
+    sourceListId,
+    destinationListId,
+    cardId,
+    userId,
+  }: {
+    sourceListId: number;
+    destinationListId: number;
+    cardId: number;
+    userId: number;
+  }) {
+    const updatedCardList = await prisma?.card?.update({
+      where: {
+        id: cardId,
+      },
+      data: {
+        listId: destinationListId,
+      },
+    });
+
+    return updatedCardList;
+  }
+
   async getCard(cardId: number) {
     // Simulate fetching a card by ID
     const card = {

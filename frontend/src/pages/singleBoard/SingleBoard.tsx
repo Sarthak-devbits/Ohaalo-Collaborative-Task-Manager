@@ -3,8 +3,34 @@ import { Button } from "@/components/ui/button";
 import { LoadingState } from "@/components/ui/loading-state";
 import { NewTaskModal } from "@/components/tasks/NewTaskModal";
 import { Search, Plus, Calendar, List, LayoutGrid } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getListDetails } from "@/services/webApis/webApis";
+import { IList } from "@/interfaces/Ilist";
 
 const SingleBoard = () => {
+  const [searchParams] = useSearchParams();
+  const boardId = searchParams.get("boardid");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!boardId) {
+      navigate(-1);
+    }
+  }, [boardId]);
+
+  const {
+    data: boardListData,
+    isError,
+    isLoading,
+  } = useQuery<IList[]>({
+    queryKey: ["list", Number(boardId)],
+    queryFn: () => getListDetails({ boardId: Number(boardId) }),
+  });
+
+
+
   return (
     <>
       {/* Workspace tabs */}
@@ -24,10 +50,8 @@ const SingleBoard = () => {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <KanbanBoard />
+        <KanbanBoard boardListData={boardListData} boardId={+boardId}/>
       </div>
-
-     
     </>
   );
 };

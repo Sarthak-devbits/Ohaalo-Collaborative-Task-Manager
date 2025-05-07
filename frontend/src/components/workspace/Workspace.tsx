@@ -5,12 +5,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Search, Plus, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import CreationModal from "../modals/CreationModal";
 import FilterSidebar from "../sidebar/FilterSidebar";
 import CreateListModal from "../modals/CreateListModal";
 
 export function Workspace() {
+  const [searchParams] = useSearchParams();
+  const boardId = searchParams.get("boardid");
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
@@ -65,6 +67,7 @@ export function Workspace() {
           description="Organize your tasks into a structured list to improve clarity and focus."
           open={open}
           handleClose={handleClose}
+          boardId={boardId}
         />
       )}
 

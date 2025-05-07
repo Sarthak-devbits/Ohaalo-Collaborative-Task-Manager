@@ -9,3 +9,9 @@ export const createCardSchema = z.object({
   dueDate: z.coerce.date().optional(), // Coerce for string-to-date conversion
   position: z.number().optional(),
 });
+
+export const moveCardSchema = z.object({
+  sourceListId: z.number(),
+  destinationListId: z.number(),
+  cardId: z.number(),
+});
