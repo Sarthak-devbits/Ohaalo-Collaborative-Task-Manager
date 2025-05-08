@@ -67,12 +67,12 @@ export function Workspace() {
           description="Organize your tasks into a structured list to improve clarity and focus."
           open={open}
           handleClose={handleClose}
-          boardId={boardId}
+          boardId={+boardId}
         />
       )}
 
       {/* Workspace header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b px-4 py-2 ">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b px-4 py-2">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold">{navBarTitle}</h1>
         </div>

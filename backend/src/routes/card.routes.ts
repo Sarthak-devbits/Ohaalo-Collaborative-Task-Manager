@@ -6,6 +6,7 @@ export const cardRoutes = Router();
 const cardController = new CardController();
 
 cardRoutes.post('/card', verifyToken, cardController.createCard);
+cardRoutes.post('/card/member/add', verifyToken, cardController.addCardMember);
 cardRoutes.put('/card/move', verifyToken, cardController.moveCard);
 
 

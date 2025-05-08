@@ -13,6 +13,7 @@ boardRoutes.get('/board/recently-viewed', verifyToken, boardController.getRecent
 
 boardRoutes.post('/board', verifyToken, boardController.createBoard);
 boardRoutes.post('/board/like', verifyToken, boardController.likeBoard);
+boardRoutes.post('/board/member/add', verifyToken, boardController.addBoardMember);
 
 boardRoutes.put('/board', verifyToken, boardController.updateBoard);
 

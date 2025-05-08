@@ -41,3 +41,8 @@ export const boardUpdateSchema = z
       .optional(),
   })
   .strict();
+
+export const addBoardMemberScema = z.object({
+  boardId: z.number().min(1, 'Board ID is required'),
+  userIds: z.array(z.number().min(1, 'User ID is required')),
+});

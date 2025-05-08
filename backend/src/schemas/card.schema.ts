@@ -10,6 +10,11 @@ export const createCardSchema = z.object({
   position: z.number().optional(),
 });
 
+export const addMemberScema = z.object({
+  cardId: z.number().min(1, 'Card ID is required'),
+  userIds: z.array(z.number().min(1, 'User ID is required')),
+});
+
 export const moveCardSchema = z.object({
   sourceListId: z.number(),
   destinationListId: z.number(),

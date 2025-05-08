@@ -92,7 +92,7 @@ export function Sidebar() {
         />
       )}
 
-      <div className="flex h-14 items-center justify-between border-b px-4 py-2">
+      <div className="flex h-[3.3rem] items-center justify-between border-b px-4 py-2">
         {!isCollapsed && (
           <div className="flex items-center gap-2">
             <img src={ohaloSvg} />

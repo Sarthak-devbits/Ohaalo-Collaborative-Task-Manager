@@ -1,4 +1,8 @@
-import { boardSchema, boardUpdateSchema } from '../schemas/board.schema';
+import {
+  addBoardMemberScema,
+  boardSchema,
+  boardUpdateSchema,
+} from '../schemas/board.schema';
 import { prisma } from '../lib/prisma';
 import { Request, Response } from 'express';
 import { formResponse } from '../utils/formResponse';
@@ -289,5 +293,74 @@ export class BoardController {
       .json(formResponse(httpStatusCodes[200].code, recentlyViewedBoards));
   }
 
-  
+  async addBoardMember(req: Request, res: Response) {
+    const validateData = addBoardMemberScema.parse(req.body);
+    const { boardId, userIds } = validateData;
+
+    const isBoardExist = await prisma?.board?.findFirst({
+      where: {
+        id: +boardId,
+      },
+      select: {
+        id: true,
+        workspaceId: true,
+      },
+    });
+
+    const workSpaceId = await isBoardExist?.workspaceId;
+
+    if (!isBoardExist || !workSpaceId) {
+      return res
+        .status(httpStatusCodes[404].code)
+        .json(formResponse(httpStatusCodes[404].code, 'Invalid Board ID'));
+    }
+
+    const foundUsers = await prisma?.user.findMany({
+      where: {
+        id: {
+          in: userIds,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (foundUsers?.length != userIds?.length) {
+      return res
+        .status(httpStatusCodes[404].code)
+        .json(formResponse(httpStatusCodes[404].code, `UserId's are inValid`));
+    }
+
+    await prisma?.boardUser.createMany({
+      data: userIds.map((userId) => ({
+        boardId: +boardId,
+        userId,
+        role: 'MEMBER',
+        status: 'ACTIVE',
+      })),
+      skipDuplicates: true,
+    });
+
+    const result = await prisma?.workSpaceUser.createMany({
+      data: userIds.map((userId) => ({
+        boardId: +boardId,
+        userId,
+        workspaceId: +workSpaceId,
+        role: 'MEMBER',
+      })),
+      skipDuplicates: true,
+    });
+
+    console.log('Result');
+    console.log(result);
+    return res
+      .status(httpStatusCodes[200].code)
+      .json(
+        formResponse(
+          httpStatusCodes[200].code,
+          'Members added to board successfully'
+        )
+      );
+  }
 }
