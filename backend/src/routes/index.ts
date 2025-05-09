@@ -6,6 +6,7 @@ import { labelRoutes } from './label.routes';
 import { gptRoutes } from './gpt.routes';
 import { cardRoutes } from './card.routes';
 import { workspaceRoutes } from './workspace.routes';
+import { testRoutes } from './test.routes';
 
 export const routes = Router();
 
@@ -27,6 +28,7 @@ routes.use('/v1', listRoutes);
 //Card Route
 routes.use('/v1', cardRoutes);
 
-
 //Label Route
 routes.use('/v1', labelRoutes);
+
+routes.use('/v1', testRoutes);

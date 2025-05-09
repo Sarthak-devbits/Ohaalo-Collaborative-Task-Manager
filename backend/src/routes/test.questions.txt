@@ -1,0 +1,51 @@
+✅ Relational Joins & Filtering
+Get all boards (with title, id) owned by users who have the role admin in any workspace.
+
+Find all cards where the dueDate is within the next 3 days and assigned to a user with the email domain @example.com.
+
+Retrieve a list of workspaces that have more than 5 users with role MEMBER, and include their names and total member count.
+
+Fetch all comments made by users who have liked the board that the comment's card belongs to.
+
+List all boards that contain at least one card assigned to a user whose email ends with '@example.com', and include the board's title, the list title, and the card title.
+
+
+🧠 Aggregation & Grouping
+For each board, get the count of total cards, and return boards sorted by that count (descending).
+
+Get the average number of lists per board in each workspace.
+
+Find the top 3 users who have commented the most in the last 30 days (return their name, email, and comment count).
+
+🔄 Nested Writes & Updates
+Create a new workspace with a default board, and add the owner as a WorkSpaceUser and BoardUser in one Prisma query.
+
+Assign a card to 3 users and attach 2 labels to it in a single nested write.
+
+When a board is archived, also mark all of its lists and cards as "completed: true".
+
+🔒 Authorization-like Logic
+Find all boards where a given userId has access (via any role), but only return the BoardRole if the user is not a VIEWER.
+
+Return all cards that the user has access to only through workspace access, not directly via board user or card member.
+
+📊 Complex Filtering & Logic
+Get all cards where the user is a CardMember, and the card has no attachments AND at least one comment.
+
+Return all users who are members of multiple workspaces (more than 1), and show their total workspace count.
+
+Get all boards that do not belong to any workspace (e.g., orphan boards or incorrectly created ones).
+
+🧱 Model Integrity & Cleanup
+Find all BoardUser entries where the corresponding user no longer exists (simulate a data integrity check).
+
+Delete all comments older than 1 year but only if the related card is completed.
+
+🧪 Performance & Optimization Thought Experiments
+Design an efficient query to load a full board view: board → lists → cards → card members, labels, comments (with author info) — but only fetch what's needed for rendering.
+
+Paginate all cards a user is assigned to, sorted by due date (oldest first), and return with total count for frontend pagination.
+
+Would you like the solutions after you attempt them, or hints/tips as you go?
+
+Once you've tackled these, I can give you a "System Design + Prisma" challenge set next.

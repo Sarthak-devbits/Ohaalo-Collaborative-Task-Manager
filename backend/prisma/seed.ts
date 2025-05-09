@@ -1,93 +1,54 @@
 import { PrismaClient } from '@prisma/client';
+import fs from 'fs';
+import path from 'path';
+import { parse } from 'csv-parse/sync';
+
 const prisma = new PrismaClient();
 
-async function main() {
-  const users = [
-    {
-      username: 'user1',
-      email: 'user1@example.com',
-      password: 'password1',
-      jwtId: 'jwt1',
-      refreshToken: 'refresh1',
-    },
-    {
-      username: 'user2',
-      email: 'user2@example.com',
-      password: 'password2',
-      jwtId: 'jwt2',
-      refreshToken: 'refresh2',
-    },
-    {
-      username: 'user3',
-      email: 'user3@example.com',
-      password: 'password3',
-      jwtId: 'jwt3',
-      refreshToken: 'refresh3',
-    },
-    {
-      username: 'user4',
-      email: 'user4@example.com',
-      password: 'password4',
-      jwtId: 'jwt4',
-      refreshToken: 'refresh4',
-    },
-    {
-      username: 'user5',
-      email: 'user5@example.com',
-      password: 'password5',
-      jwtId: 'jwt5',
-      refreshToken: 'refresh5',
-    },
-    {
-      username: 'user6',
-      email: 'user6@example.com',
-      password: 'password6',
-      jwtId: 'jwt6',
-      refreshToken: 'refresh6',
-    },
-    {
-      username: 'user7',
-      email: 'user7@example.com',
-      password: 'password7',
-      jwtId: 'jwt7',
-      refreshToken: 'refresh7',
-    },
-    {
-      username: 'user8',
-      email: 'user8@example.com',
-      password: 'password8',
-      jwtId: 'jwt8',
-      refreshToken: 'refresh8',
-    },
-    {
-      username: 'user9',
-      email: 'user9@example.com',
-      password: 'password9',
-      jwtId: 'jwt9',
-      refreshToken: 'refresh9',
-    },
-    {
-      username: 'user10',
-      email: 'user10@example.com',
-      password: 'password10',
-      jwtId: 'jwt10',
-      refreshToken: 'refresh10',
-    },
-  ];
+function loadCSV(fileName: string) {
+  const content = fs.readFileSync(path.join(__dirname, 'data', fileName));
+  return parse(content, {
+    columns: true,
+    skip_empty_lines: true,
+  });
+}
 
-  for (const user of users) {
-    await prisma.user.create({
-      data: user,
-    });
-  }
+async function main() {
+  const users = loadCSV('users.csv');
+  const workspaces = loadCSV('workspaces.csv');
+  const boards = loadCSV('boards.csv');
+  const lists = loadCSV('lists.csv');
+  const cards = loadCSV('cards.csv');
+  const attachments = loadCSV('attachments.csv');
+  const comments = loadCSV('comments.csv');
+  const labels = loadCSV('labels.csv');
+  const boardLikes = loadCSV('board_likes.csv');
+  const workspaceUsers = loadCSV('workspace_users.csv');
+  const boardUsers = loadCSV('board_users.csv');
+  const cardMembers = loadCSV('card_members.csv');
+
+  // Insert in the order of dependencies
+  for (const user of users) await prisma.user.create({ data: user });
+  for (const workspace of workspaces) await prisma.workSpace.create({ data: workspace });
+  for (const board of boards) await prisma.board.create({ data: board });
+  for (const list of lists) await prisma.list.create({ data: list });
+  for (const card of cards) await prisma.card.create({ data: card });
+  for (const attachment of attachments) await prisma.attachment.create({ data: attachment });
+  for (const comment of comments) await prisma.comment.create({ data: comment });
+  for (const label of labels) await prisma.label.create({ data: label });
+
+  // Many-to-many relationship tables
+  for (const like of boardLikes) await prisma.boardLikes.create({ data: like });
+  for (const relation of workspaceUsers) await prisma.workSpaceUser.create({ data: relation });
+  for (const relation of boardUsers) await prisma.boardUser.create({ data: relation });
+  for (const relation of cardMembers) await prisma.cardMember.create({ data: relation });
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
+  .catch((e) => {
+    console.error('Error inserting data:', e);
     process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });

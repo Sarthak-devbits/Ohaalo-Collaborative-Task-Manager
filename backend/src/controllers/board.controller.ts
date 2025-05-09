@@ -25,6 +25,22 @@ export class BoardController {
     const validateData = boardSchema.parse(req.body);
     const { title, visibility, backgroundImg, workspaceId } = validateData;
 
+    const workspaceData = await prisma?.workSpace?.findFirst({
+      where: {
+        id: +workspaceId,
+      },
+      select: {
+        id: true,
+        ownerId: true,
+      },
+    });
+
+    if (!workspaceData) {
+      return res
+        .status(httpStatusCodes[404].code)
+        .json(formResponse(httpStatusCodes[404].code, 'Invalid Workspace ID'));
+    }
+
     const result = await prisma.$transaction(async (tx) => {
       const board = await tx.board.create({
         data: {
@@ -50,7 +66,7 @@ export class BoardController {
         data: {
           userId: req.id,
           workspaceId: workspaceId,
-          role: 'OWNER',
+          role: workspaceData.ownerId == req.id ? 'OWNER' : 'MEMBER',
           boardId: board.id,
         },
       });
